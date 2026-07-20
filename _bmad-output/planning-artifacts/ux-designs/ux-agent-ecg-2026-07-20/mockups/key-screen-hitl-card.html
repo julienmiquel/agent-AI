@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECG Agent Console — HITL Approval Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: rgba(22, 30, 46, 0.75);
+      --card-border: rgba(56, 189, 248, 0.15);
+      --accent-cyan: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+    .console-window {
+      width: 900px;
+      height: 650px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(11, 15, 25, 0.9);
+    }
+
+    .brand { font-weight: 700; font-size: 16px; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
+    .status-pill { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .chat-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+
+    .msg { max-width: 80%; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+    .msg-user { align-self: flex-end; background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2)); border: 1px solid rgba(56, 189, 248, 0.3); color: #fff; }
+    .msg-agent { align-self: flex-start; background: var(--card-bg); border: 1px solid var(--card-border); color: #d1d5db; }
+
+    /* HITL Card Widget */
+    .hitl-card {
+      align-self: flex-start;
+      width: 100%;
+      max-width: 600px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--accent-amber);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(245, 158, 11, 0.15);
+    }
+
+    .hitl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .hitl-badge { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .hitl-title { font-size: 15px; font-weight: 600; color: #fff; }
+
+    .manifest-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+    .manifest-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .manifest-table td:first-child { color: var(--text-muted); width: 35%; }
+    .manifest-table td:last-child { color: var(--accent-cyan); font-weight: 500; }
+
+    .hitl-actions { display: flex; gap: 12px; justify-content: flex-end; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; }
+    .btn-approve { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo)); color: #fff; box-shadow: 0 0 16px rgba(56, 189, 248, 0.3); }
+    .btn-reject { background: transparent; border: 1px solid var(--accent-rose); color: var(--accent-rose); }
+    .btn:hover { transform: translateY(-1px); }
+
+    .input-bar { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(11, 15, 25, 0.9); display: flex; gap: 12px; }
+    .input-field { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 16px; color: #fff; font-size: 14px; outline: none; }
+  </style>
+</head>
+<body>
+
+  <div class="console-window">
+    <header>
+      <div class="brand">⚡ ECG Yield & Operations Agent Console</div>
+      <div class="status-pill">● Session Active</div>
+    </header>
+
+    <div class="chat-body">
+      <div class="msg msg-user">Release mobil-homes MH-102 to MH-105 at La Sirène to sale</div>
+
+      <div class="hitl-card">
+        <div class="hitl-header">
+          <span class="hitl-badge">Action Required</span>
+          <span class="hitl-title">Confirm Resalys Inventory Status Update</span>
+        </div>
+
+        <table class="manifest-table">
+          <tr><td>Target System</td><td>Resalys PMS via Apigee Gateway</td></tr>
+          <tr><td>Endpoint</td><td>PUT /pms/v1/units/status</td></tr>
+          <tr><td>Campsite ID</td><td>LA_SIRENE_06</td></tr>
+          <tr><td>Target Units</td><td>MH-102, MH-103, MH-104, MH-105</td></tr>
+          <tr><td>New Status</td><td>AVAILABLE_FOR_SALE</td></tr>
+          <tr><td>User Identity</td><td>julien.miquel@ecg.camp (OAuth2)</td></tr>
+        </table>
+
+        <div class="hitl-actions">
+          <button class="btn btn-reject">Reject</button>
+          <button class="btn btn-approve">Approve Execution</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <input type="text" class="input-field" placeholder="Type a message or command..." disabled>
+      <button class="btn btn-approve">Send</button>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -48,13 +48,13 @@ tracking_system: file-system
 story_location: /Users/julienmiquel/dev/agent-ecg/_bmad-output/implementation-artifacts
 
 development_status:
-  epic-1: in-progress
+  epic-1: done
   1-1-root-supervisor-agent-and-conversational-session-scaffold: done
   1-2-yield-analytics-agent-and-bigquery-nl-to-sql-execution: done
-  1-3-multi-period-and-campsite-cluster-comparative-analysis: ready-for-dev
+  1-3-multi-period-and-campsite-cluster-comparative-analysis: done
   epic-1-retrospective: optional
-  epic-2: backlog
-  2-1-resalys-pms-inventory-update-rest-tool-with-identity-passthrough: backlog
+  epic-2: in-progress
+  2-1-resalys-pms-inventory-update-rest-tool-with-identity-passthrough: ready-for-dev
   2-2-interactive-hitl-approval-card-component-and-interception-gate: backlog
   epic-2-retrospective: optional
   epic-3: backlog

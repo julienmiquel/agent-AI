@@ -50,8 +50,8 @@ story_location: /Users/julienmiquel/dev/agent-ecg/_bmad-output/implementation-ar
 development_status:
   epic-1: in-progress
   1-1-root-supervisor-agent-and-conversational-session-scaffold: done
-  1-2-yield-analytics-agent-and-bigquery-nl-to-sql-execution: ready-for-dev
-  1-3-multi-period-and-campsite-cluster-comparative-analysis: backlog
+  1-2-yield-analytics-agent-and-bigquery-nl-to-sql-execution: done
+  1-3-multi-period-and-campsite-cluster-comparative-analysis: ready-for-dev
   epic-1-retrospective: optional
   epic-2: backlog
   2-1-resalys-pms-inventory-update-rest-tool-with-identity-passthrough: backlog

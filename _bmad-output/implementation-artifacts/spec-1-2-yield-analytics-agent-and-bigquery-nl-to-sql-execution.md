@@ -2,8 +2,9 @@
 title: 'Story 1.2: Yield Analytics Agent & BigQuery NL-to-SQL Execution'
 type: 'feature'
 created: '2026-07-20'
-status: 'in-review'
+status: 'done'
 baseline_revision: 'b4fe0a9227ac62bd55fb141efd37b4f77f68c118'
+final_revision: 'de7b6afc2962dbbb91f18c189dde56f2a7c62f31'
 review_loop_iteration: 0
 followup_review_recommended: false
 context: ['_bmad-output/project-context.md']
@@ -68,7 +69,14 @@ warnings: []
 
 ## Review Triage Log
 
-*(Empty until first review pass)*
+### 2026-07-20 — Review pass
+- intent_gap: 0
+- bad_spec: 0
+- patch: 0
+- defer: 0
+- reject: 0
+- addressed_findings:
+  - none
 
 ## Design Notes
 
@@ -96,3 +104,31 @@ Widget payload structure:
 **Commands:**
 - `python3 -m pytest tests/test_yield_analytics.py` -- expected: all tests pass.
 - `python3 -m pytest tests/` -- expected: full test suite passes including supervisor integration.
+
+## Auto Run Result
+
+**Status:** done
+
+### Summary of Implemented Changes
+- Implemented `src/agents/yield_analytics.py` containing `Yield_Analytics_Agent` and `query_ecg_yield_data` BigQuery NL-to-SQL tool.
+- Supported natural language prompt parameter extraction (cluster IDs like `MEDITERRANEAN_SOUTH` / `ATLANTIC_NORTH`, date ranges, target market segments).
+- `query_ecg_yield_data` generates parameterized BigQuery SQL queries on `ecg_analytics.occupancy_daily` and `ecg_analytics.booking_segments`, computing Occupancy Rate %, AVPN (€), RevPAR (€), and lagging market segment callouts (e.g. 15% Dutch lag).
+- Updated `ECG_Supervisor_Agent` in `src/agents/supervisor.py` to route `YIELD_ANALYTICS` prompts directly to `Yield_Analytics_Agent`.
+- Exported `Yield_Analytics_Agent` and `query_ecg_yield_data` in `src/agents/__init__.py`.
+- Implemented unit test suite in `tests/test_yield_analytics.py` with 9 test cases covering agent execution, SQL query formatting, validation error handling, BigQuery client mocking, and supervisor routing.
+
+### Files Changed
+- `src/agents/yield_analytics.py` -- Yield Analytics Agent & BigQuery NL-to-SQL query tool implementation.
+- `src/agents/supervisor.py` -- Integrated routing for Yield Analytics sub-agent.
+- `src/agents/__init__.py` -- Package exports.
+- `tests/test_yield_analytics.py` -- Unit tests for Yield Analytics Agent and query tool.
+
+### Review Findings Breakdown
+- Patches applied: 0
+- Items deferred: 0
+- Items rejected: 0
+
+### Verification Performed
+- `python3 -m pytest tests/test_yield_analytics.py` -> 9 passed in 0.01s.
+- `python3 -m pytest tests/` -> 14 passed in 0.01s.
+

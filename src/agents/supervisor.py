@@ -6,6 +6,7 @@ and enforces Human-in-the-Loop (HITL) interception gates for state-changing oper
 
 from typing import Any, Dict, Optional
 from src.config import MODEL_SUPERVISOR
+from src.agents.yield_analytics import Yield_Analytics_Agent
 
 
 class StateSession:
@@ -90,7 +91,9 @@ class ECG_Supervisor_Agent:
 
         return "YIELD_ANALYTICS"
 
-    def process_turn(self, prompt: str, session: StateSession) -> Dict[str, Any]:
+    def process_turn(
+        self, prompt: str, session: StateSession, bq_client: Optional[Any] = None
+    ) -> Dict[str, Any]:
         """Process a conversational turn, updating session state and routing intent."""
         if not prompt or not prompt.strip():
             return {
@@ -102,6 +105,18 @@ class ECG_Supervisor_Agent:
 
         session.update_from_prompt(prompt)
         intent = self.classify_intent(prompt)
+
+        if intent == "YIELD_ANALYTICS":
+            yield_agent = Yield_Analytics_Agent()
+            agent_result = yield_agent.process_query(prompt, session, bq_client=bq_client)
+            return {
+                "status": agent_result.get("status", "SUCCESS"),
+                "intent": intent,
+                "routed_agent": "YIELD_ANALYTICS_AGENT",
+                "session_state": session.to_dict(),
+                "agent_output": agent_result,
+                "message": agent_result.get("message", "Routed to YIELD_ANALYTICS_AGENT with active session context."),
+            }
 
         return {
             "status": "SUCCESS",

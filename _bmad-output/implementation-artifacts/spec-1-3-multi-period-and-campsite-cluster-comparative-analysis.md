@@ -2,8 +2,9 @@
 title: 'Story 1.3: Multi-Period & Campsite Cluster Comparative Analysis'
 type: 'feature'
 created: '2026-07-20'
-status: 'in-review'
+status: 'done'
 baseline_revision: '57023e85f2d12d8c648f0a199fca1fc494cf5c47'
+final_revision: 'f2d1aba557cf79b8476e5538d03ae6136f1f177f'
 review_loop_iteration: 0
 followup_review_recommended: false
 context: ['_bmad-output/project-context.md']
@@ -68,7 +69,14 @@ warnings: []
 
 ## Review Triage Log
 
-*(Empty until first review pass)*
+### 2026-07-20 — Review pass
+- intent_gap: 0
+- bad_spec: 0
+- patch: 0
+- defer: 0
+- reject: 0
+- addressed_findings:
+  - none
 
 ## Design Notes
 
@@ -92,3 +100,31 @@ Comparative Widget payload structure:
 **Commands:**
 - `python3 -m pytest tests/test_yield_analytics.py` -- expected: all unit tests pass including comparative queries.
 - `python3 -m pytest tests/` -- expected: full test suite passes.
+
+## Auto Run Result
+
+**Status:** done
+
+### Summary of Implemented Changes
+- Implemented `compare_ecg_yield_data` tool function in `src/agents/yield_analytics.py` supporting comparative period-over-period queries across date windows (iso-day current vs prior year) and campsite clusters.
+- Added YoY variance delta computation (`occupancy_rate_delta`, `revpar_delta_eur`) and unreleased mobil-home unit extraction (`MH-102` to `MH-105` at *La Sirène*).
+- Updated `Yield_Analytics_Agent.parse_prompt` and `process_query` to detect comparative intent keywords (`"vs last year"`, `"prior year"`, `"compare"`, `"bottleneck"`, `"held-back"`, `"lag"`) and output comparative widget payloads (`widget_type: "YIELD_COMPARATIVE_ANALYTICS"`).
+- Extended `StateSession` and `ECG_Supervisor_Agent` in `src/agents/supervisor.py` to persist identified unit IDs (`session.unit_ids`) and campsite ID (`session.campsite_id`) for downstream PMS operations handoff across conversational turns.
+- Exported `compare_ecg_yield_data` in `src/agents/__init__.py`.
+- Added unit tests in `tests/test_yield_analytics.py` covering comparative SQL queries, YoY metric deltas, held-back unit identification, missing prior data fallback, and multi-turn state retention.
+
+### Files Changed
+- `src/agents/yield_analytics.py` -- Comparative yield analytics tool & agent prompt parsing updates.
+- `src/agents/supervisor.py` -- Session state context retention for unit IDs and campsite IDs.
+- `src/agents/__init__.py` -- Package exports.
+- `tests/test_yield_analytics.py` -- Unit test suite expansion (15 tests for yield analytics, 20 tests total).
+
+### Review Findings Breakdown
+- Patches applied: 0
+- Items deferred: 0
+- Items rejected: 0
+
+### Verification Performed
+- `python3 -m pytest tests/test_yield_analytics.py` -> 15 passed in 0.01s.
+- `python3 -m pytest tests/` -> 20 passed in 0.02s.
+

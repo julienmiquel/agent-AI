@@ -2,7 +2,13 @@
 
 from unittest.mock import MagicMock
 import pytest
-from src.agents import ECG_Supervisor_Agent, StateSession, Yield_Analytics_Agent, query_ecg_yield_data
+from src.agents import (
+    ECG_Supervisor_Agent,
+    StateSession,
+    Yield_Analytics_Agent,
+    compare_ecg_yield_data,
+    query_ecg_yield_data,
+)
 from src.config import MODEL_YIELD
 
 
@@ -164,3 +170,168 @@ def test_supervisor_yield_analytics_routing():
     assert "agent_output" in res
     assert res["agent_output"]["widget"]["widget_type"] == "YIELD_ANALYTICS"
     assert res["agent_output"]["metrics"]["occupancy_rate"] == 0.78
+
+
+def test_compare_ecg_yield_data_success_and_yoy_variance():
+    res = compare_ecg_yield_data(
+        cluster_id="MEDITERRANEAN_SOUTH",
+        current_start="2026-07-01",
+        current_end="2026-07-31",
+        prior_start="2025-07-01",
+        prior_end="2025-07-31",
+        target_market="NL",
+    )
+
+    assert res["status"] == "SUCCESS"
+    assert len(res["sql_queries"]) == 3
+    assert "ecg_analytics.occupancy_daily" in res["sql_queries"][0]
+    assert "ecg_analytics.occupancy_daily" in res["sql_queries"][1]
+    assert "ecg_analytics.booking_segments" in res["sql_queries"][2]
+
+    # Verify metrics & YoY variance
+    metrics = res["metrics"]
+    assert metrics["current_period"]["occupancy_rate"] == 0.78
+    assert metrics["prior_period"]["occupancy_rate"] == 0.88
+    assert metrics["variance"]["occupancy_rate_delta"] == -0.10
+    assert metrics["variance"]["revpar_delta_eur"] == -10.75
+
+    # Verify held-back unit extraction
+    held_back = res["held_back_units"]
+    assert len(held_back) == 1
+    assert held_back[0]["campsite_id"] == "LA_SIRENE_06"
+    assert held_back[0]["campsite_name"] == "La Sirène"
+    assert held_back[0]["unit_ids"] == ["MH-102", "MH-103", "MH-104", "MH-105"]
+    assert held_back[0]["count"] == 4
+
+    # Verify widget structure
+    widget = res["widget"]
+    assert widget["widget_type"] == "YIELD_COMPARATIVE_ANALYTICS"
+    assert widget["cluster_id"] == "MEDITERRANEAN_SOUTH"
+    assert widget["variance"]["occupancy_rate_delta"] == -0.10
+
+
+def test_compare_ecg_yield_data_validation_errors():
+    # Empty cluster_id
+    res1 = compare_ecg_yield_data(cluster_id="")
+    assert res1["status"] == "VALIDATION_ERROR"
+    assert "Cluster ID cannot be empty" in res1["error"]
+
+    # Invalid current date window
+    res2 = compare_ecg_yield_data(
+        cluster_id="MEDITERRANEAN_SOUTH",
+        current_start="2026-07-31",
+        current_end="2026-07-01",
+    )
+    assert res2["status"] == "VALIDATION_ERROR"
+    assert "Invalid current date window" in res2["error"]
+
+    # Invalid prior date window
+    res3 = compare_ecg_yield_data(
+        cluster_id="MEDITERRANEAN_SOUTH",
+        prior_start="2025-07-31",
+        prior_end="2025-07-01",
+    )
+    assert res3["status"] == "VALIDATION_ERROR"
+    assert "Invalid prior date window" in res3["error"]
+
+
+def test_compare_ecg_yield_data_with_mock_bq_client():
+    mock_bq = MagicMock()
+
+    # Current period row
+    row_curr = MagicMock()
+    row_curr.occupancy_rate = 0.80
+    row_curr.revpar_eur = 90.00
+    job_curr = MagicMock()
+    job_curr.result.return_value = [row_curr]
+
+    # Prior period row
+    row_prior = MagicMock()
+    row_prior.occupancy_rate = 0.90
+    row_prior.revpar_eur = 100.00
+    job_prior = MagicMock()
+    job_prior.result.return_value = [row_prior]
+
+    mock_bq.query.side_effect = [job_curr, job_prior]
+
+    res = compare_ecg_yield_data(
+        cluster_id="MEDITERRANEAN_SOUTH",
+        bq_client=mock_bq,
+    )
+
+    assert res["status"] == "SUCCESS"
+    assert res["metrics"]["variance"]["occupancy_rate_delta"] == -0.10
+    assert res["metrics"]["variance"]["revpar_delta_eur"] == -10.00
+
+
+def test_compare_ecg_yield_data_missing_prior_data_fallback():
+    mock_bq = MagicMock()
+
+    row_curr = MagicMock()
+    row_curr.occupancy_rate = 0.78
+    row_curr.revpar_eur = 87.75
+    job_curr = MagicMock()
+    job_curr.result.return_value = [row_curr]
+
+    # Empty prior period result (missing historical data)
+    job_prior = MagicMock()
+    job_prior.result.return_value = []
+
+    mock_bq.query.side_effect = [job_curr, job_prior]
+
+    res = compare_ecg_yield_data(
+        cluster_id="MEDITERRANEAN_SOUTH",
+        bq_client=mock_bq,
+    )
+
+    assert res["status"] == "SUCCESS"
+    # Zero variance fallback when prior data missing
+    assert res["metrics"]["variance"]["occupancy_rate_delta"] == 0.0
+    assert res["metrics"]["variance"]["revpar_delta_eur"] == 0.0
+
+
+def test_comparative_prompt_parsing():
+    agent = Yield_Analytics_Agent()
+
+    # Prompt with comparative keywords
+    parsed = agent.parse_prompt("Dutch booking lag in Mediterranean South vs last year")
+    assert parsed["cluster_id"] == "MEDITERRANEAN_SOUTH"
+    assert parsed["target_market"] == "NL"
+    assert parsed["is_comparative"] is True
+    assert parsed["current_start"] == "2026-07-01"
+    assert parsed["prior_start"] == "2025-07-01"
+
+    # Multi-cluster comparative prompt
+    parsed2 = agent.parse_prompt("Compare July occupancy Mediterranean South vs Atlantic North")
+    assert parsed2["is_comparative"] is True
+    assert parsed2["cluster_id"] == "MEDITERRANEAN_SOUTH"
+
+
+def test_comparative_process_query_and_session_retention():
+    supervisor = ECG_Supervisor_Agent()
+    session = StateSession()
+
+    # Turn 1: Comparative prompt
+    prompt1 = "Dutch booking lag in Mediterranean South vs last year"
+    res1 = supervisor.process_turn(prompt1, session)
+
+    assert res1["status"] == "SUCCESS"
+    assert res1["intent"] == "YIELD_ANALYTICS"
+    assert res1["routed_agent"] == "YIELD_ANALYTICS_AGENT"
+    assert res1["agent_output"]["widget"]["widget_type"] == "YIELD_COMPARATIVE_ANALYTICS"
+
+    # Verify held-back unit IDs and campsite ID persisted in StateSession
+    assert session.get("session.unit_ids") == ["MH-102", "MH-103", "MH-104", "MH-105"]
+    assert session.unit_ids == ["MH-102", "MH-103", "MH-104", "MH-105"]
+    assert session.get("session.campsite_id") == "LA_SIRENE_06"
+    assert session.campsite_id == "LA_SIRENE_06"
+
+    # Turn 2: Downstream PMS turn inherits persisted unit IDs & campsite ID
+    prompt2 = "Release these held-back mobil-home units to sale"
+    res2 = supervisor.process_turn(prompt2, session)
+
+    assert res2["status"] == "SUCCESS"
+    assert res2["intent"] == "PMS_OPERATIONS"
+    assert res2["session_state"]["session.unit_ids"] == ["MH-102", "MH-103", "MH-104", "MH-105"]
+    assert res2["session_state"]["session.campsite_id"] == "LA_SIRENE_06"
+

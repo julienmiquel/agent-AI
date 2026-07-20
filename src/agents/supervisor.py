@@ -34,6 +34,38 @@ class StateSession:
         """Store or update a session state variable."""
         self._state[key] = value
 
+    @property
+    def unit_ids(self) -> Any:
+        return self.get("session.unit_ids", [])
+
+    @unit_ids.setter
+    def unit_ids(self, values: Any) -> None:
+        self.set("session.unit_ids", values)
+
+    @property
+    def campsite_id(self) -> Any:
+        return self.get("session.campsite_id")
+
+    @campsite_id.setter
+    def campsite_id(self, value: Any) -> None:
+        self.set("session.campsite_id", value)
+
+    @property
+    def target_cluster(self) -> Any:
+        return self.get("session.target_cluster")
+
+    @target_cluster.setter
+    def target_cluster(self, value: Any) -> None:
+        self.set("session.target_cluster", value)
+
+    @property
+    def target_market(self) -> Any:
+        return self.get("session.target_market")
+
+    @target_market.setter
+    def target_market(self, value: Any) -> None:
+        self.set("session.target_market", value)
+
     def update_from_prompt(self, prompt: str) -> None:
         """Extract and update session variables from user prompt keywords."""
         prompt_lower = prompt.lower()
@@ -47,10 +79,16 @@ class StateSession:
         # Campsite detection
         if "la sirène" in prompt_lower or "la sirene" in prompt_lower:
             self.set("session.campsite_id", "LA_SIRENE_06")
+        elif "dolmen cove" in prompt_lower or "dolmen_cove" in prompt_lower:
+            self.set("session.campsite_id", "DOLMEN_COVE_02")
 
         # Target Market / Country detection
         if "dutch" in prompt_lower or "netherlands" in prompt_lower or "nl" in prompt_lower:
             self.set("session.target_market", "NL")
+        elif "french" in prompt_lower or "france" in prompt_lower or "fr" in prompt_lower:
+            self.set("session.target_market", "FR")
+        elif "german" in prompt_lower or "germany" in prompt_lower or "de" in prompt_lower:
+            self.set("session.target_market", "DE")
 
     def to_dict(self) -> Dict[str, Any]:
         """Export session state dictionary."""
@@ -77,8 +115,16 @@ class ECG_Supervisor_Agent:
 
         prompt_lower = prompt.lower()
 
-        # PMS Operations Intent
-        if any(kw in prompt_lower for kw in ["release", "unit", "mobil-home", "pms", "resalys", "unlock", "status"]):
+        # Operational PMS actions (release, unlock, pms, resalys) take precedence
+        if any(kw in prompt_lower for kw in ["release", "unlock", "pms", "resalys"]):
+            return "PMS_OPERATIONS"
+
+        # Comparative Yield Analytics keywords
+        if any(kw in prompt_lower for kw in ["vs last year", "prior year", "compare", "comparative", "bottleneck", "held-back", "held back"]):
+            return "YIELD_ANALYTICS"
+
+        # General PMS Operations Intent (unit/mobil-home status)
+        if any(kw in prompt_lower for kw in ["unit", "mobil-home", "status"]):
             return "PMS_OPERATIONS"
 
         # Marketing Campaign Intent
@@ -90,6 +136,7 @@ class ECG_Supervisor_Agent:
             return "YIELD_ANALYTICS"
 
         return "YIELD_ANALYTICS"
+
 
     def process_turn(
         self, prompt: str, session: StateSession, bq_client: Optional[Any] = None
@@ -109,6 +156,20 @@ class ECG_Supervisor_Agent:
         if intent == "YIELD_ANALYTICS":
             yield_agent = Yield_Analytics_Agent()
             agent_result = yield_agent.process_query(prompt, session, bq_client=bq_client)
+
+            # Persist identified held-back unit IDs and campsite ID in session state
+            if agent_result.get("status") == "SUCCESS":
+                widget = agent_result.get("widget") or {}
+                held_back = agent_result.get("held_back_units") or widget.get("held_back_units") or []
+                if held_back:
+                    first_hb = held_back[0]
+                    u_ids = first_hb.get("unit_ids", [])
+                    c_id = first_hb.get("campsite_id")
+                    if u_ids:
+                        session.set("session.unit_ids", u_ids)
+                    if c_id:
+                        session.set("session.campsite_id", c_id)
+
             return {
                 "status": agent_result.get("status", "SUCCESS"),
                 "intent": intent,
@@ -125,3 +186,4 @@ class ECG_Supervisor_Agent:
             "session_state": session.to_dict(),
             "message": f"Routed to {intent} with active session context.",
         }
+

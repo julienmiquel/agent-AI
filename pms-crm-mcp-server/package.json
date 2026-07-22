@@ -1,0 +1,39 @@
+{
+  "name": "@ecg/pms-crm-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "European Camping Group (ECG) PMS & CRM Interactive MCP UI App Server",
+  "main": "dist/server.js",
+  "scripts": {
+    "build:app": "node build-apps.js",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build": "npm run build:app && npm run build:server",
+    "watch": "cross-env INPUT=mcp-app.html vite build --watch",
+    "serve:http": "npx tsx main.ts",
+    "serve:stdio": "npx tsx main.ts --stdio",
+    "start": "npm run start:http",
+    "start:http": "npm run build && npm run serve:http",
+    "start:stdio": "npm run build 1>&2 && npm run serve:stdio",
+    "dev": "concurrently \"npm run watch\" \"npm run serve:http\""
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^8.6.0",
+    "@modelcontextprotocol/ext-apps": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "chart.js": "^4.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-singlefile": "^2.1.0"
+  }
+}

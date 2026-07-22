@@ -4,7 +4,7 @@ type: 'feature'
 created: '2026-07-20'
 status: 'done'
 baseline_revision: '57023e85f2d12d8c648f0a199fca1fc494cf5c47'
-final_revision: 'f2d1aba557cf79b8476e5538d03ae6136f1f177f'
+final_revision: 'ff662d12804c5a6c74813f396992b3a837cb3497'
 review_loop_iteration: 0
 followup_review_recommended: false
 context: ['_bmad-output/project-context.md']
@@ -72,11 +72,16 @@ warnings: []
 ### 2026-07-20 — Review pass
 - intent_gap: 0
 - bad_spec: 0
-- patch: 0
+- patch: 6 (high 3, medium 3, low 0)
 - defer: 0
 - reject: 0
 - addressed_findings:
-  - none
+  - `[high]` `[patch]` Prevented SQL injection in `src/agents/yield_analytics.py` via input sanitization and parameterized date/cluster formatting.
+  - `[high]` `[patch]` Implemented defensive unit_ids validation in `PMS_Operations_Agent` preventing hardcoded fallback releases.
+  - `[high]` `[patch]` Added safety guards for empty session contexts and prompt parsing.
+  - `[medium]` `[patch]` Improved regex date parsing and ISO date validation in `Yield_Analytics_Agent`.
+  - `[medium]` `[patch]` Harmonized model tier selection between `agent_ecg/agent.py` and `src/config.py`.
+  - `[medium]` `[patch]` Added defensive type safety checks for `unit_ids`, `held_back_units`, and session variables across all agents.
 
 ## Design Notes
 

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; connect-src 'self' https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app https://*.run.app https://*.googleapis.com;">
+  <title>ECG Customer Claim Support Tickets</title>
+</head>
+<body>
+  <div class="app-container" role="main">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">ECG</div>
+        <div>
+          <h1 class="title">Customer Maintenance & Claim Tickets</h1>
+          <p class="subtitle">European Camping Group • Support Portal & Firestore DB Persistence</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="identity-badge" id="identity-badge" aria-label="Authenticated identity">CloudIdentity (julien)</div>
+      </div>
+    </header>
+
+    <!-- Claim Tickets Content -->
+    <main class="tab-content active" id="tickets-tab" role="region" aria-label="Customer Claim Tickets Panel">
+      <div class="metrics-grid" role="region" aria-label="Support Tickets Metrics Overview">
+        <div class="metric-card danger" tabindex="0">
+          <div class="metric-value" id="ticket-metric-open">0</div>
+          <div class="metric-label">Open Claims</div>
+        </div>
+        <div class="metric-card warning" tabindex="0">
+          <div class="metric-value" id="ticket-metric-urgent">0</div>
+          <div class="metric-label">Urgent / High Priority</div>
+        </div>
+        <div class="metric-card" tabindex="0">
+          <div class="metric-value" id="ticket-metric-progress">0</div>
+          <div class="metric-label">In Progress</div>
+        </div>
+        <div class="metric-card success" tabindex="0">
+          <div class="metric-value" id="ticket-metric-resolved">0</div>
+          <div class="metric-label">Resolved / Closed</div>
+        </div>
+      </div>
+
+      <div class="main-grid crm-grid">
+        <section class="card config-card" aria-label="Register New Customer Claim Ticket Form">
+          <h2 class="card-title">📝 Register New Customer Claim Ticket</h2>
+          
+          <div class="form-group">
+            <label class="form-label" for="ticket-customer-name">Customer Full Name</label>
+            <input type="text" id="ticket-customer-name" class="select-input" placeholder="e.g. Jean Dupont" value="Jean Dupont" aria-label="Customer Full Name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ticket-campsite-select">Campsite & Mobil-Home Unit</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="ticket-campsite-select" class="select-input" style="flex: 1;" aria-label="Select Campsite">
+                <option value="LA_SIRENE_06">La Sirène (French Riviera)</option>
+                <option value="HIPOCAMP_07">L'Hippocampe (Roussillon)</option>
+              </select>
+              <input type="text" id="ticket-unit-id" class="select-input" placeholder="Unit (e.g. MH-108)" value="MH-108" style="width: 100px;" aria-label="Mobil-Home Unit ID">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ticket-category">Claim Category</label>
+            <select id="ticket-category" class="select-input" aria-label="Claim Category">
+              <option value="MAINTENANCE">🔧 Maintenance / Repair</option>
+              <option value="CLEANLINESS">🧹 Cleanliness / Hygiene</option>
+              <option value="NOISE">🔊 Noise / Nuisance</option>
+              <option value="BILLING">💳 Billing / Refund</option>
+              <option value="EQUIPMENT">🛋️ Missing Equipment</option>
+              <option value="OTHER">❓ Other Concern</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ticket-priority">Priority Level</label>
+            <select id="ticket-priority" class="select-input" aria-label="Priority Level">
+              <option value="LOW">🟢 Low Priority</option>
+              <option value="MEDIUM">🟡 Medium Priority</option>
+              <option value="HIGH" selected>🟠 High Priority</option>
+              <option value="URGENT">🔴 Urgent (Immediate Action)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ticket-description">Claim Details / Issue Description</label>
+            <textarea id="ticket-description" class="select-input" rows="3" style="resize: vertical; font-family: inherit;" placeholder="Describe customer claim issue in detail..." aria-label="Issue Description Details">Water heater failure in mobil-home MH-108. Customer requested urgent technician intervention.</textarea>
+          </div>
+
+          <button id="btn-create-ticket" class="btn btn-primary btn-block" aria-label="Submit Customer Claim Ticket to Firebase Firestore">
+            🎫 Submit Customer Claim Ticket to Firebase Firestore
+          </button>
+        </section>
+
+        <section class="card history-card" aria-label="Claim Tickets List">
+          <div class="card-header">
+            <h2 class="card-title">📋 Open & Active Claim Tickets (Firebase Firestore DB)</h2>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <select id="filter-ticket-status" class="select-input" style="font-size: 11px; padding: 2px 6px;" aria-label="Filter Tickets By Status">
+                <option value="ALL">All Statuses</option>
+                <option value="OPEN" selected>OPEN</option>
+                <option value="IN_PROGRESS">IN PROGRESS</option>
+                <option value="RESOLVED">RESOLVED</option>
+                <option value="CLOSED">CLOSED</option>
+              </select>
+              <button id="btn-refresh-tickets" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;" aria-label="Refresh Support Tickets List">
+                🔄 Refresh
+              </button>
+            </div>
+          </div>
+          
+          <div id="support-tickets-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto;" role="region" aria-label="Support Tickets List Container">
+            <div style="color: var(--text-secondary); font-size: 13px; font-style: italic;">Loading support tickets from Firebase Cloud Firestore...</div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div id="status-bar" class="status-bar" role="status" aria-live="polite">
+        Status: Ready • Connected to Firebase Cloud Firestore DB & ECG Support Portal
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/claim-app.ts"></script>
+</body>
+</html>

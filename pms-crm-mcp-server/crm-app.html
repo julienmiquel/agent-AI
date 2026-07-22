@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; connect-src 'self' https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app https://*.run.app https://*.googleapis.com;">
+  <title>ECG CRM Flash Promotion Campaigns</title>
+</head>
+<body>
+  <div class="app-container" role="main">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">ECG</div>
+        <div>
+          <h1 class="title">CRM Flash Promotion Campaigns</h1>
+          <p class="subtitle">European Camping Group • Apigee Webhook & Asset Generation</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="identity-badge" id="identity-badge" aria-label="Authenticated identity">CloudIdentity (julien)</div>
+      </div>
+    </header>
+
+    <!-- CRM Content -->
+    <main class="tab-content active" id="crm-tab" role="region" aria-label="CRM Flash Promotion Campaigns Panel">
+      <div class="main-grid crm-grid">
+        <section class="card config-card" aria-label="Campaign Configurator">
+          <h2 class="card-title">Flash Campaign Configurator</h2>
+          
+          <div class="form-group">
+            <label class="form-label" for="target-market">Target Market Language</label>
+            <select id="target-market" class="select-input" aria-label="Target Market Language">
+              <option value="NL">Dutch (Netherlands - NL)</option>
+              <option value="FR">French (France - FR)</option>
+              <option value="DE">German (Germany - DE)</option>
+              <option value="UK">English (United Kingdom - UK)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="target-cluster">Target Campsite Cluster</label>
+            <select id="target-cluster" class="select-input" aria-label="Target Campsite Cluster">
+              <option value="MEDITERRANEAN_SOUTH">Mediterranean South</option>
+              <option value="ATLANTIC_NORTH">Atlantic North</option>
+              <option value="ADRIATIC_COAST">Adriatic Coast</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="slider-header">
+              <label class="form-label" for="discount-slider">Discount Percentage</label>
+              <span class="slider-val" id="discount-val" aria-live="polite">15%</span>
+            </div>
+            <input type="range" id="discount-slider" class="slider-input" min="5" max="50" step="5" value="15" aria-label="Discount Percentage Slider">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Apigee CRM Webhook Endpoint</label>
+            <div class="endpoint-pill" tabindex="0" aria-label="Endpoint URL: POST /marketing/v1/campaigns/draft">POST /marketing/v1/campaigns/draft</div>
+          </div>
+
+          <button id="btn-stage-campaign" class="btn btn-primary btn-block" aria-label="Stage Flash Campaign via HITL Approval">
+            🚀 Stage Flash Campaign via HITL Approval
+          </button>
+        </section>
+
+        <section class="card preview-card" aria-label="Live Ad Creative Preview">
+          <h2 class="card-title">Live Ad Creative & Imagen Asset Preview</h2>
+          
+          <div class="preview-box">
+            <div class="preview-header">
+              <span class="preview-badge" id="preview-market-badge" aria-label="Target Market Badge">NL Market</span>
+              <span class="preview-cluster" id="preview-cluster-badge" aria-label="Target Cluster Badge">MEDITERRANEAN_SOUTH</span>
+            </div>
+            
+            <div class="copywriting-box">
+              <div class="copywriting-title">Generated Ad Copy:</div>
+              <p class="copywriting-text" id="preview-copywriting" aria-live="polite">Loading copywriting...</p>
+            </div>
+
+            <div class="imagen-box">
+              <div class="imagen-title">Imagen GCS Asset URI:</div>
+              <div class="uri-pill" id="preview-imagen-uri" aria-live="polite">gs://ecg-marketing-assets/genai/banners/nl_mediterranean_south_july.png</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Previously Validated Campaigns History -->
+      <section class="card history-card" style="margin-top: 16px;" aria-label="Staged Campaigns History">
+        <div class="card-header">
+          <h2 class="card-title">📜 Previously Staged & Approved Campaigns (Firebase Firestore DB)</h2>
+          <button id="btn-refresh-campaigns" class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" aria-label="Refresh Staged Campaigns List">
+            🔄 Refresh List
+          </button>
+        </div>
+        <div id="crm-campaigns-history-list" class="campaigns-history-list" style="display: flex; flex-direction: column; gap: 10px;" role="region" aria-label="Campaigns History List">
+          <div style="color: var(--text-secondary); font-size: 13px; font-style: italic;">Loading staged campaigns from Firebase Cloud Firestore...</div>
+        </div>
+      </section>
+
+      <!-- CRM HITL Interception Banner -->
+      <div class="hitl-banner hidden" id="crm-hitl-banner" role="alert" aria-live="assertive">
+        <div class="hitl-icon" aria-hidden="true">⚡</div>
+        <div class="hitl-content">
+          <div class="hitl-title">CRM Flash Campaign HITL Staging Gate</div>
+          <div class="hitl-message" id="crm-hitl-message">Target API: POST /marketing/v1/campaigns/draft</div>
+        </div>
+        <div class="hitl-actions">
+          <button id="crm-hitl-approve" class="btn btn-success" aria-label="Approve Campaign Staging Action">Approve Staging</button>
+          <button id="crm-hitl-reject" class="btn btn-danger" aria-label="Reject Campaign Staging Action">Reject</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div id="status-bar" class="status-bar" role="status" aria-live="polite">
+        Status: Ready • Connected to Apigee CRM Webhook Gateway & Firebase Cloud Firestore DB
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/crm-app.ts"></script>
+</body>
+</html>

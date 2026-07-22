@@ -183,10 +183,11 @@ def test_compare_ecg_yield_data_success_and_yoy_variance():
     )
 
     assert res["status"] == "SUCCESS"
-    assert len(res["sql_queries"]) == 3
+    assert len(res["sql_queries"]) == 4
     assert "ecg_analytics.occupancy_daily" in res["sql_queries"][0]
     assert "ecg_analytics.occupancy_daily" in res["sql_queries"][1]
     assert "ecg_analytics.booking_segments" in res["sql_queries"][2]
+    assert "ecg_analytics.booking_segments" in res["sql_queries"][3]
 
     # Verify metrics & YoY variance
     metrics = res["metrics"]
@@ -252,7 +253,14 @@ def test_compare_ecg_yield_data_with_mock_bq_client():
     job_prior = MagicMock()
     job_prior.result.return_value = [row_prior]
 
-    mock_bq.query.side_effect = [job_curr, job_prior]
+    # Segment row
+    row_seg = MagicMock()
+    row_seg.segment = "NL"
+    row_seg.lag_percentage = 0.15
+    job_seg = MagicMock()
+    job_seg.result.return_value = [row_seg]
+
+    mock_bq.query.side_effect = [job_curr, job_prior, job_seg]
 
     res = compare_ecg_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
@@ -277,7 +285,10 @@ def test_compare_ecg_yield_data_missing_prior_data_fallback():
     job_prior = MagicMock()
     job_prior.result.return_value = []
 
-    mock_bq.query.side_effect = [job_curr, job_prior]
+    job_seg = MagicMock()
+    job_seg.result.return_value = []
+
+    mock_bq.query.side_effect = [job_curr, job_prior, job_seg]
 
     res = compare_ecg_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
@@ -326,12 +337,17 @@ def test_comparative_process_query_and_session_retention():
     assert session.get("session.campsite_id") == "LA_SIRENE_06"
     assert session.campsite_id == "LA_SIRENE_06"
 
-    # Turn 2: Downstream PMS turn inherits persisted unit IDs & campsite ID
+    # Turn 2: Downstream PMS turn pauses for HITL confirmation
     prompt2 = "Release these held-back mobil-home units to sale"
     res2 = supervisor.process_turn(prompt2, session)
 
-    assert res2["status"] == "SUCCESS"
+    assert res2["status"] == "PENDING_CONFIRMATION"
     assert res2["intent"] == "PMS_OPERATIONS"
     assert res2["session_state"]["session.unit_ids"] == ["MH-102", "MH-103", "MH-104", "MH-105"]
     assert res2["session_state"]["session.campsite_id"] == "LA_SIRENE_06"
+
+    # Turn 3: User approves action -> execution completes successfully
+    res3 = supervisor.process_turn("Approve", session)
+    assert res3["status"] == "SUCCESS"
+    assert res3["routed_agent"] == "PMS_OPERATIONS_AGENT"
 

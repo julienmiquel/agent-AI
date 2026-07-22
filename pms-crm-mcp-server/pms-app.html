@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; connect-src 'self' https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app https://*.run.app https://*.googleapis.com;">
+  <title>ECG Resalys PMS Inventory Management</title>
+</head>
+<body>
+  <div class="app-container" role="main">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">ECG</div>
+        <div>
+          <h1 class="title">Resalys PMS Inventory Management</h1>
+          <p class="subtitle">European Camping Group • Live Unit Availability & Yield Allocation</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <label class="control-label" for="campsite-selector">
+          Campsite:
+          <select id="campsite-selector" class="select-input" aria-label="Select campsite"></select>
+        </label>
+        <div class="identity-badge" id="identity-badge" aria-label="Authenticated identity">CloudIdentity (julien)</div>
+      </div>
+    </header>
+
+    <!-- PMS Content -->
+    <main class="tab-content active" id="pms-tab" role="region" aria-label="PMS Inventory Management Panel">
+      <div class="metrics-grid" role="region" aria-label="Inventory Metrics Overview">
+        <div class="metric-card" tabindex="0">
+          <div class="metric-value" id="metric-available">0</div>
+          <div class="metric-label">Available for Sale</div>
+        </div>
+        <div class="metric-card warning" tabindex="0">
+          <div class="metric-value" id="metric-heldback">0</div>
+          <div class="metric-label">Held Back (Yield)</div>
+        </div>
+        <div class="metric-card danger" tabindex="0">
+          <div class="metric-value" id="metric-maintenance">0</div>
+          <div class="metric-label">Maintenance</div>
+        </div>
+        <div class="metric-card success" tabindex="0">
+          <div class="metric-value" id="metric-booked">0</div>
+          <div class="metric-label">Booked</div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <section class="card chart-card" aria-label="Inventory Allocation Chart">
+          <h2 class="card-title">Inventory Allocation Breakdown</h2>
+          <div class="chart-container">
+            <canvas id="pms-chart" aria-label="Doughnut chart displaying inventory status distribution" role="img"></canvas>
+          </div>
+        </section>
+
+        <section class="card units-card" aria-label="Mobil Home Units Grid">
+          <div class="card-header">
+            <h2 class="card-title">Mobil-Home Units Status</h2>
+            <div class="action-buttons" style="display: flex; gap: 8px;">
+              <button id="btn-holdback-units" class="btn btn-secondary" aria-label="Hold Back 4 Units for Yield Management">
+                🔒 Hold Back 4 Units
+              </button>
+              <button id="btn-release-heldback" class="btn btn-warning" aria-label="Release All Held Back Units to Sale">
+                🔓 Release All Held Back
+              </button>
+            </div>
+          </div>
+          <div class="units-grid" id="units-container" role="grid" aria-label="Mobil-Home Units List"></div>
+        </section>
+      </div>
+
+      <!-- HITL Interception Banner -->
+      <div class="hitl-banner hidden" id="pms-hitl-banner" role="alert" aria-live="assertive">
+        <div class="hitl-icon" aria-hidden="true">⚠️</div>
+        <div class="hitl-content">
+          <div class="hitl-title">Human-In-The-Loop Approval Gate</div>
+          <div class="hitl-message" id="pms-hitl-message">Target API: PUT /pms/v1/units/status</div>
+        </div>
+        <div class="hitl-actions">
+          <button id="pms-hitl-approve" class="btn btn-success" aria-label="Approve PMS Inventory Action">Approve Action</button>
+          <button id="pms-hitl-reject" class="btn btn-danger" aria-label="Reject PMS Inventory Action">Reject</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div id="status-bar" class="status-bar" role="status" aria-live="polite">
+        Status: Ready • Connected to Resalys PMS REST API & Firebase Cloud Firestore DB
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/pms-app.ts"></script>
+</body>
+</html>

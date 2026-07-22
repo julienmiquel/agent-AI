@@ -19,7 +19,20 @@ def resalys_update_unit_inventory(
     user_token: Optional[str] = None,
     **kwargs: Any,
 ) -> Dict[str, Any]:
-    """Updates the operational status of campsite units in Resalys PMS via Apigee REST API."""
+    """Updates the operational status of campsite units in Resalys PMS via Apigee REST API.
+
+    Args:
+        campsite_id: Campsite identifier (e.g., 'LA_SIRENE_06', 'DOLMEN_COVE_02').
+        unit_ids: List or single string of mobil-home unit IDs (e.g., ['MH-102', 'MH-103']).
+        new_status: Target operational status ('AVAILABLE_FOR_SALE', 'UNDER_MAINTENANCE', 'BLOCKED').
+        unit_type: Accommodation category (default: 'PREMIUM_3_BEDROOMS').
+        user_token: Optional Google Workspace Cloud Identity OAuth bearer token for identity passthrough.
+        **kwargs: Additional keyword arguments for camelCase alias support from UI frontend.
+
+    Returns:
+        Structured response containing execution status, updated unit IDs, count, endpoint invoked,
+        and interactive PMS Inventory widget payload.
+    """
     if campsite_id is None:
         campsite_id = kwargs.get("campsiteId") or kwargs.get("campsite_id") or "LA_SIRENE_06"
     unit_ids = unit_ids if unit_ids is not None else kwargs.get("unitIds") or kwargs.get("unit_ids") or kwargs.get("unitId")
@@ -103,7 +116,17 @@ def resalys_get_support_tickets(
     campsite_id: Optional[str] = None,
     **kwargs: Any,
 ) -> Dict[str, Any]:
-    """Retrieves customer claim support tickets (maintenance, cleanliness, billing, etc.) from Firebase Firestore DB."""
+    """Retrieves customer claim support tickets (maintenance, cleanliness, billing, etc.) from Firebase Firestore DB.
+
+    Args:
+        status: Status filter string ('ALL', 'OPEN', 'IN_PROGRESS', or 'RESOLVED'). Default is 'ALL'.
+        campsite_id: Optional campsite ID filter (e.g. 'LA_SIRENE_06').
+        **kwargs: Additional keyword arguments for camelCase alias support from UI frontend.
+
+    Returns:
+        Structured response containing status, matching tickets list, total count, tab/view indicators,
+        and interactive Support Tickets widget payload.
+    """
     status_filter = status or kwargs.get("status") or "ALL"
     campsite_filter = campsite_id or kwargs.get("campsiteId") or kwargs.get("campsite_id")
     tickets = datastore.get_support_tickets(status=status_filter, campsite_id=campsite_filter)
@@ -140,7 +163,16 @@ class PMS_Operations_Agent:
     def process_turn(
         self, prompt: Optional[str], session: Optional[Any] = None
     ) -> Dict[str, Any]:
-        """Process turn to update unit inventory status or fetch support claim tickets based on prompt or active session context."""
+        """Process turn to update unit inventory status or fetch support claim tickets based on prompt or active session context.
+
+        Args:
+            prompt: Optional natural language user prompt string.
+            session: Optional active StateSession instance containing campsite and unit IDs.
+
+        Returns:
+            Dictionary containing execution outcome, updated unit records or support ticket list,
+            and corresponding frontend widget payload.
+        """
         logger.info("PMS_Operations_Agent processing turn for prompt: '%s'", prompt)
 
         campsite_id = None

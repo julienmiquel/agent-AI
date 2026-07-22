@@ -7,12 +7,16 @@ and enforces Human-in-the-Loop (HITL) interception gates for state-changing oper
 import copy
 import logging
 import re
+import time
 from typing import Any, Dict, Optional
 from src.config import MODEL_SUPERVISOR
 from src.agents.yield_analytics import Yield_Analytics_Agent
 from src.agents.pms_operations import PMS_Operations_Agent
 from src.agents.marketing_campaign import Marketing_Campaign_Agent
 from src.datastore import datastore
+from src.observability import tracer, log_intent_capture, log_outcome_capture, scrub_pii, log_telemetry_event
+from src.memory import memory_manager
+from src.guardrails import screen_input_guardrail, check_business_guardrail, self_eval_output_verify
 
 logger = logging.getLogger(__name__)
 
@@ -172,198 +176,263 @@ class ECG_Supervisor_Agent:
         self, prompt: Optional[str], session: StateSession, bq_client: Optional[Any] = None, confirmed: bool = False
     ) -> Dict[str, Any]:
         """Process a conversational turn, updating session state and routing intent with HITL interception."""
-        logger.info("Processing turn for session '%s' with prompt: '%s'", session.session_id, prompt)
+        start_t = time.time()
+        prompt_str = str(prompt) if prompt is not None else ""
+        
+        with tracer.span("Supervisor.process_turn", attributes={"session_id": session.session_id, "confirmed": confirmed}) as span:
+            logger.info("Processing turn for session '%s' with prompt: '%s'", session.session_id, prompt)
 
-        if prompt is None or not str(prompt).strip():
-            logger.error("Validation error: Prompt is empty or whitespace.")
-            return {
-                "status": "VALIDATION_ERROR",
-                "message": "Prompt cannot be empty. Please provide operational instructions.",
-                "routed_agent": None,
-                "session_state": session.to_dict(),
-            }
-
-        prompt_str = str(prompt)
-        prompt_lower = prompt_str.lower().strip()
-
-        # 1. Check if session has a pending HITL action awaiting approval/rejection
-        pending = session.pending_action
-        if pending and not confirmed:
-            # Rejection check FIRST (including negative phrases like "not ok", "don't")
-            is_rejection = (
-                any(re.search(r'\b' + kw + r'\b', prompt_lower) for kw in ["reject", "no", "cancel", "non", "annuler", "stop", "abort"])
-                or "not ok" in prompt_lower
-                or "don't" in prompt_lower
-                or "do not" in prompt_lower
-            )
-            if is_rejection:
-                logger.info("User REJECTED pending HITL action: %s", pending.get("intent"))
-                session.pending_action = None
-                rejected_card = {
-                    "widget_type": "HITL_APPROVAL_CARD",
-                    "status": "REJECTED",
-                    "amber_border": "#f43f5e",
-                    "status_color": "#f43f5e",
-                    "message": "Action cancelled by user.",
-                }
-                return {
-                    "status": "CANCELLED",
-                    "intent": pending.get("intent"),
-                    "routed_agent": pending.get("routed_agent"),
+            if prompt is None or not prompt_str.strip():
+                logger.error("Validation error: Prompt is empty or whitespace.")
+                res = {
+                    "status": "VALIDATION_ERROR",
+                    "message": "Prompt cannot be empty. Please provide operational instructions.",
+                    "routed_agent": None,
                     "session_state": session.to_dict(),
-                    "widget": rejected_card,
-                    "message": "Operation cancelled by user. Zero backend side-effects occurred.",
+                    "recovery_instruction": "Please prompt the user to describe their operational goal (e.g. analyze yield, check maintenance tickets, release stock, or stage promo campaign).",
                 }
+                log_outcome_capture(self.name, "VALIDATION_ERROR", res.get("message"), round((time.time() - start_t) * 1000, 2))
+                return scrub_pii(res)
 
-            # Approval check next with strict word boundaries
-            is_approval = any(re.search(r'\b' + kw + r'\b', prompt_lower) for kw in ["approve", "yes", "confirm", "ok", "oui", "valider"])
-            if is_approval:
-                logger.info("User APPROVED pending HITL action: %s", pending.get("intent"))
-                session.pending_action = None
-                return self.process_turn(pending.get("prompt", prompt_str), session, bq_client=bq_client, confirmed=True)
+            prompt_lower = prompt_str.lower().strip()
 
-        session.update_from_prompt(prompt_str)
-        intent = self.classify_intent(prompt_str)
+            # Security Guardrail 1: Screen user input for prompt injection and malicious commands
+            guard_res = screen_input_guardrail(prompt_str, session.session_id)
+            if not guard_res.get("passed"):
+                res = {
+                    "status": "VALIDATION_ERROR",
+                    "message": guard_res.get("violation"),
+                    "routed_agent": None,
+                    "session_state": session.to_dict(),
+                    "recovery_instruction": guard_res.get("recovery_instruction"),
+                }
+                log_outcome_capture(self.name, "VALIDATION_ERROR", res.get("message"), round((time.time() - start_t) * 1000, 2))
+                return scrub_pii(res)
 
-        if intent == "YIELD_ANALYTICS":
-            logger.info("Routing turn to Yield_Analytics_Agent")
-            yield_agent = Yield_Analytics_Agent()
-            try:
-                agent_result = yield_agent.process_query(prompt_str, session, bq_client=bq_client)
-            except Exception as e:
-                logger.error("Yield_Analytics_Agent execution error: %s", str(e))
-                return {
-                    "status": "ERROR",
+            # 1. Check if session has a pending HITL action awaiting approval/rejection
+            pending = session.pending_action
+            if pending and not confirmed:
+                is_rejection = (
+                    any(re.search(r'\b' + kw + r'\b', prompt_lower) for kw in ["reject", "no", "cancel", "non", "annuler", "stop", "abort"])
+                    or "not ok" in prompt_lower
+                    or "don't" in prompt_lower
+                    or "do not" in prompt_lower
+                )
+                if is_rejection:
+                    logger.info("User REJECTED pending HITL action: %s", pending.get("intent"))
+                    session.pending_action = None
+                    rejected_card = {
+                        "widget_type": "HITL_APPROVAL_CARD",
+                        "status": "REJECTED",
+                        "amber_border": "#f43f5e",
+                        "status_color": "#f43f5e",
+                        "message": "Action cancelled by user.",
+                    }
+                    res = {
+                        "status": "CANCELLED",
+                        "intent": pending.get("intent"),
+                        "routed_agent": pending.get("routed_agent"),
+                        "session_state": session.to_dict(),
+                        "widget": rejected_card,
+                        "message": "Operation cancelled by user. Zero backend side-effects occurred.",
+                        "recovery_instruction": "The mutating operation was cancelled. You may ask the user if they would like to modify parameters or explore another campsite.",
+                    }
+                    memory_manager.add_turn_async(session.session_id, prompt_str, res, intent=str(pending.get("intent")))
+                    log_outcome_capture(self.name, "CANCELLED", res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=str(pending.get("intent")))
+                    return scrub_pii(res)
+
+                is_approval = any(re.search(r'\b' + kw + r'\b', prompt_lower) for kw in ["approve", "yes", "confirm", "ok", "oui", "valider"])
+                if is_approval:
+                    logger.info("User APPROVED pending HITL action: %s", pending.get("intent"))
+                    session.pending_action = None
+                    return self.process_turn(pending.get("prompt", prompt_str), session, bq_client=bq_client, confirmed=True)
+
+            session.update_from_prompt(prompt_str)
+            intent = self.classify_intent(prompt_str)
+            span.set_attribute("intent", intent)
+            log_intent_capture(self.name, intent, {"prompt": prompt_str, "session_id": session.session_id, "confirmed": confirmed})
+
+            # Business Guardrail Screening
+            biz_guard = check_business_guardrail(intent, session.to_dict())
+            if not biz_guard.get("passed"):
+                res = {
+                    "status": "VALIDATION_ERROR",
+                    "intent": intent,
+                    "routed_agent": None,
+                    "session_state": session.to_dict(),
+                    "message": biz_guard.get("violation"),
+                    "recovery_instruction": biz_guard.get("recovery_instruction"),
+                }
+                log_outcome_capture(self.name, "VALIDATION_ERROR", res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                return scrub_pii(res)
+
+            if intent == "YIELD_ANALYTICS":
+                logger.info("Routing turn to Yield_Analytics_Agent")
+                yield_agent = Yield_Analytics_Agent()
+                try:
+                    with tracer.span("Yield_Analytics_Agent.process_query"):
+                        agent_result = yield_agent.process_query(prompt_str, session, bq_client=bq_client)
+                except Exception as e:
+                    logger.error("Yield_Analytics_Agent execution error: %s", str(e))
+                    res = {
+                        "status": "ERROR",
+                        "intent": intent,
+                        "routed_agent": "YIELD_ANALYTICS_AGENT",
+                        "session_state": session.to_dict(),
+                        "message": f"Yield Analytics execution error: {str(e)}",
+                        "recovery_instruction": "A BigQuery database exception occurred. Please verify the campsite cluster and date range parameters.",
+                    }
+                    log_outcome_capture(self.name, "ERROR", res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                    return scrub_pii(res)
+
+                if agent_result.get("status") == "SUCCESS":
+                    widget = agent_result.get("widget") or {}
+                    held_back = agent_result.get("held_back_units") or widget.get("held_back_units") or []
+                    if held_back and isinstance(held_back[0], dict):
+                        first_hb = held_back[0]
+                        u_ids = first_hb.get("unit_ids", [])
+                        c_id = first_hb.get("campsite_id")
+                        if u_ids:
+                            session.set("session.unit_ids", u_ids)
+                        if c_id:
+                            session.set("session.campsite_id", c_id)
+
+                logger.info("Yield_Analytics_Agent completed with status '%s'", agent_result.get("status"))
+                res = {
+                    "status": agent_result.get("status", "SUCCESS"),
                     "intent": intent,
                     "routed_agent": "YIELD_ANALYTICS_AGENT",
                     "session_state": session.to_dict(),
-                    "message": f"Yield Analytics execution error: {str(e)}",
+                    "agent_output": agent_result,
+                    "message": agent_result.get("message", "Routed to YIELD_ANALYTICS_AGENT with active session context."),
                 }
+                if agent_result.get("recovery_instruction"):
+                    res["recovery_instruction"] = agent_result.get("recovery_instruction")
 
-            if agent_result.get("status") == "SUCCESS":
-                widget = agent_result.get("widget") or {}
-                held_back = agent_result.get("held_back_units") or widget.get("held_back_units") or []
-                if held_back and isinstance(held_back[0], dict):
-                    first_hb = held_back[0]
-                    u_ids = first_hb.get("unit_ids", [])
-                    c_id = first_hb.get("campsite_id")
-                    if u_ids:
-                        session.set("session.unit_ids", u_ids)
-                    if c_id:
-                        session.set("session.campsite_id", c_id)
+                final_res = self_eval_output_verify(self.name, prompt_str, res, confirmed=confirmed)
+                memory_manager.add_turn_async(session.session_id, prompt_str, final_res, intent=intent)
+                log_outcome_capture(self.name, final_res.get("status", "SUCCESS"), final_res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                return scrub_pii(final_res)
 
-            logger.info("Yield_Analytics_Agent completed with status '%s'", agent_result.get("status"))
-            return {
-                "status": agent_result.get("status", "SUCCESS"),
-                "intent": intent,
-                "routed_agent": "YIELD_ANALYTICS_AGENT",
-                "session_state": session.to_dict(),
-                "agent_output": agent_result,
-                "message": agent_result.get("message", "Routed to YIELD_ANALYTICS_AGENT with active session context."),
-            }
+            elif intent in {"PMS_OPERATIONS", "MARKETING_CAMPAIGN"}:
+                if not confirmed:
+                    logger.info("Intercepting mutating call for %s -> HITL Approval Gate required", intent)
+                    session.pending_action = {
+                        "intent": intent,
+                        "routed_agent": f"{intent}_AGENT",
+                        "prompt": prompt_str,
+                    }
+                    
+                    target_api = "PUT /pms/v1/units/status" if intent == "PMS_OPERATIONS" else "POST /marketing/v1/campaigns/draft"
+                    mkt = session.get("session.target_market") or "NL"
+                    cls = session.get("session.target_cluster") or "MEDITERRANEAN_SOUTH"
 
-        elif intent in {"PMS_OPERATIONS", "MARKETING_CAMPAIGN"}:
-            # Check for HITL interception requirement
-            if not confirmed:
-                logger.info("Intercepting mutating call for %s -> HITL Approval Gate required", intent)
-                session.pending_action = {
-                    "intent": intent,
-                    "routed_agent": f"{intent}_AGENT",
-                    "prompt": prompt_str,
-                }
+                    manifest = {
+                        "target_api": target_api,
+                        "target_market": mkt,
+                        "identity_scope": f"CloudIdentity ({session.user_id or 'julien'})",
+                    }
+
+                    if intent == "PMS_OPERATIONS":
+                        manifest["campsite_id"] = session.campsite_id or "LA_SIRENE_06"
+                        manifest["unit_ids"] = session.unit_ids or ["MH-102", "MH-103", "MH-104", "MH-105"]
+                    else:
+                        discount_val = 15
+                        m_disc = re.search(r'(\d{1,3})\s*%', prompt_str)
+                        if m_disc:
+                            try:
+                                d_parsed = int(m_disc.group(1))
+                                if 0 <= d_parsed <= 100:
+                                    discount_val = d_parsed
+                            except ValueError:
+                                pass
+                        manifest["campaign_name"] = f"Flash_Promo_{mkt}_{cls}_July"
+                        manifest["target_segment_id"] = f"SEG_{mkt}_PAST_GUESTS_{cls}_2025"
+                        manifest["discount_percentage"] = discount_val
+                        manifest["cluster"] = cls
+
+                    hitl_card = {
+                        "widget_type": "HITL_APPROVAL_CARD",
+                        "status": "PENDING_CONFIRMATION",
+                        "amber_border": "#f59e0b",
+                        "manifest": manifest,
+                        "actions": ["Approve", "Reject"],
+                    }
+
+                    res = {
+                        "status": "PENDING_CONFIRMATION",
+                        "intent": intent,
+                        "routed_agent": f"{intent}_AGENT",
+                        "session_state": session.to_dict(),
+                        "widget": hitl_card,
+                        "message": "State-changing action requires explicit confirmation. Please inspect the HITL Approval Card and click Approve or Reject.",
+                        "recovery_instruction": "Please present the HITL Approval Card to the user and request confirmation (Approve/Reject) before proceeding.",
+                    }
+                    memory_manager.add_turn_async(session.session_id, prompt_str, res, intent=intent)
+                    log_outcome_capture(self.name, "PENDING_CONFIRMATION", res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                    return scrub_pii(res)
+
+                routed_agent_name = "PMS_OPERATIONS_AGENT" if intent == "PMS_OPERATIONS" else "MARKETING_CAMPAIGN_AGENT"
+                logger.info("Confirmed turn! Routing to %s", routed_agent_name)
                 
-                target_api = "PUT /pms/v1/units/status" if intent == "PMS_OPERATIONS" else "POST /marketing/v1/campaigns/draft"
-                mkt = session.get("session.target_market") or "NL"
-                cls = session.get("session.target_cluster") or "MEDITERRANEAN_SOUTH"
-
-                manifest = {
-                    "target_api": target_api,
-                    "target_market": mkt,
-                    "identity_scope": f"CloudIdentity ({session.user_id or 'julien'})",
-                }
-
                 if intent == "PMS_OPERATIONS":
-                    manifest["campsite_id"] = session.campsite_id or "LA_SIRENE_06"
-                    manifest["unit_ids"] = session.unit_ids or ["MH-102", "MH-103", "MH-104", "MH-105"]
+                    agent_inst = PMS_Operations_Agent()
                 else:
-                    discount_val = 15
-                    m_disc = re.search(r'(\d{1,3})\s*%', prompt_str)
-                    if m_disc:
-                        try:
-                            d_parsed = int(m_disc.group(1))
-                            if 0 <= d_parsed <= 100:
-                                discount_val = d_parsed
-                        except ValueError:
-                            pass
-                    manifest["campaign_name"] = f"Flash_Promo_{mkt}_{cls}_July"
-                    manifest["target_segment_id"] = f"SEG_{mkt}_PAST_GUESTS_{cls}_2025"
-                    manifest["discount_percentage"] = discount_val
-                    manifest["cluster"] = cls
+                    agent_inst = Marketing_Campaign_Agent()
 
-                hitl_card = {
+                try:
+                    with tracer.span(f"{routed_agent_name}.process_turn"):
+                        agent_result = agent_inst.process_turn(prompt_str, session)
+                except Exception as e:
+                    logger.error("%s execution error: %s", routed_agent_name, str(e))
+                    res = {
+                        "status": "ERROR",
+                        "intent": intent,
+                        "routed_agent": routed_agent_name,
+                        "session_state": session.to_dict(),
+                        "message": f"{routed_agent_name} execution error: {str(e)}",
+                        "recovery_instruction": f"An API gateway error occurred during {routed_agent_name} execution. Please verify campsite inventory status or Apigee credentials.",
+                    }
+                    log_outcome_capture(self.name, "ERROR", res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                    return scrub_pii(res)
+
+                confirmed_card = {
                     "widget_type": "HITL_APPROVAL_CARD",
-                    "status": "PENDING_CONFIRMATION",
-                    "amber_border": "#f59e0b",
-                    "manifest": manifest,
-                    "actions": ["Approve", "Reject"],
+                    "status": "CONFIRMED",
+                    "status_color": "#10b981",
+                    "amber_border": "#10b981",
+                    "message": "Operation approved and executed successfully.",
                 }
 
-                return {
-                    "status": "PENDING_CONFIRMATION",
-                    "intent": intent,
-                    "routed_agent": f"{intent}_AGENT",
-                    "session_state": session.to_dict(),
-                    "widget": hitl_card,
-                    "message": "State-changing action requires explicit confirmation. Please inspect the HITL Approval Card and click Approve or Reject.",
-                }
-
-            # If confirmed, dispatch tool execution
-            routed_agent_name = "PMS_OPERATIONS_AGENT" if intent == "PMS_OPERATIONS" else "MARKETING_CAMPAIGN_AGENT"
-            logger.info("Confirmed turn! Routing to %s", routed_agent_name)
-            
-            if intent == "PMS_OPERATIONS":
-                agent_inst = PMS_Operations_Agent()
-            else:
-                agent_inst = Marketing_Campaign_Agent()
-
-            try:
-                agent_result = agent_inst.process_turn(prompt_str, session)
-            except Exception as e:
-                logger.error("%s execution error: %s", routed_agent_name, str(e))
-                return {
-                    "status": "ERROR",
+                logger.info("%s completed with status '%s'", routed_agent_name, agent_result.get("status"))
+                conf_detail = agent_result.get("message", f"Routed to {routed_agent_name} with active session context.")
+                full_msg = f"Parfait ! L'opération a été exécutée avec succès dans Resalys PMS / CRM. {conf_detail}"
+                res = {
+                    "status": agent_result.get("status", "SUCCESS"),
                     "intent": intent,
                     "routed_agent": routed_agent_name,
                     "session_state": session.to_dict(),
-                    "message": f"{routed_agent_name} execution error: {str(e)}",
+                    "agent_output": agent_result,
+                    "widget": confirmed_card,
+                    "message": full_msg,
                 }
+                if agent_result.get("recovery_instruction"):
+                    res["recovery_instruction"] = agent_result.get("recovery_instruction")
 
-            confirmed_card = {
-                "widget_type": "HITL_APPROVAL_CARD",
-                "status": "CONFIRMED",
-                "status_color": "#10b981",
-                "amber_border": "#10b981",
-                "message": "Operation approved and executed successfully.",
-            }
+                final_res = self_eval_output_verify(self.name, prompt_str, res, confirmed=confirmed)
+                memory_manager.add_turn_async(session.session_id, prompt_str, final_res, intent=intent)
+                log_outcome_capture(self.name, final_res.get("status", "SUCCESS"), final_res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+                return scrub_pii(final_res)
 
-            logger.info("%s completed with status '%s'", routed_agent_name, agent_result.get("status"))
-            conf_detail = agent_result.get("message", f"Routed to {routed_agent_name} with active session context.")
-            full_msg = f"Parfait ! L'opération a été exécutée avec succès dans Resalys PMS / CRM. {conf_detail}"
-            return {
-                "status": agent_result.get("status", "SUCCESS"),
+            logger.info("Default turn routing for intent '%s'", intent)
+            res = {
+                "status": "SUCCESS",
                 "intent": intent,
-                "routed_agent": routed_agent_name,
+                "routed_agent": f"{intent}_AGENT" if intent != "UNKNOWN" else None,
                 "session_state": session.to_dict(),
-                "agent_output": agent_result,
-                "widget": confirmed_card,
-                "message": full_msg,
+                "message": f"Routed to {intent} with active session context.",
             }
-
-        logger.info("Default turn routing for intent '%s'", intent)
-        return {
-            "status": "SUCCESS",
-            "intent": intent,
-            "routed_agent": f"{intent}_AGENT" if intent != "UNKNOWN" else None,
-            "session_state": session.to_dict(),
-            "message": f"Routed to {intent} with active session context.",
-        }
+            final_res = self_eval_output_verify(self.name, prompt_str, res, confirmed=confirmed)
+            memory_manager.add_turn_async(session.session_id, prompt_str, final_res, intent=intent)
+            log_outcome_capture(self.name, final_res.get("status", "SUCCESS"), final_res.get("message"), round((time.time() - start_t) * 1000, 2), intended_action=intent)
+            return scrub_pii(final_res)

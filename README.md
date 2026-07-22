@@ -72,6 +72,12 @@ Includes automated schema creation and data loaders ([`scripts/seed_bigquery.py`
 ### 5. 🚀 Automated Cloud Engine Deployment Pipeline
 Provides an end-to-end CI/CD pipeline ([`scripts/pipeline.py`](./scripts/pipeline.py)) to deploy, verify, and register the multi-agent system directly onto **Vertex AI Agent Engine** and **Gemini Enterprise**.
 
+### 6. 🏗️ Declarative Infrastructure as Code (Terraform)
+All Google Cloud foundational infrastructure—including BigQuery datasets (`ecg_analytics`), native Firestore databases, least-privilege IAM service accounts (`agent-ecg-runner`), and Google Cloud Secret Manager secrets—is declaratively provisioned and managed using Terraform ([`terraform/`](./terraform/)).
+
+### 7. 📊 Golden Dataset Automated Evaluation Harness
+Includes an automated regression benchmarking harness ([`tests/test_golden_eval.py`](./tests/test_golden_eval.py)) running against ground-truth trajectories ([`tests/golden_dataset.json`](./tests/golden_dataset.json)) to continuously verify text-to-SQL accuracy, HITL interception rules, prompt injection blocking, and active PII redaction.
+
 ---
 
 ## 📂 Repository Structure
@@ -86,7 +92,18 @@ agent-ecg/
 │   │   └── marketing_campaign.py # CRM copywriting and campaign staging agent
 │   ├── datastore/                # Google Cloud Firestore persistence layer
 │   │   └── firestore_client.py   # Stateful session storage client
+│   ├── guardrails/               # Security guardrails & self-eval policy plugins
+│   ├── memory/                   # Context bloat compaction & async memory manager
+│   ├── observability/            # Structured JSON logging, tracing & PII scrubber
+│   ├── schemas/                  # Explicit Pydantic JSON schemas for tool validation
 │   └── config.py                 # Centralized environment & model configuration
+├── terraform/                    # Declarative Infrastructure as Code (IaC)
+│   ├── main.tf                   # Google Cloud providers and API enablement
+│   ├── bigquery.tf               # BigQuery dataset & table schema declarations
+│   ├── firestore.tf              # Native Firestore database & composite indexes
+│   ├── secret_manager.tf         # Secure Secret Manager storage for API tokens
+│   ├── iam.tf                    # Least-privilege service accounts & IAM bindings
+│   └── variables.tf / outputs.tf # Configurable variables and resource outputs
 ├── pms-crm-mcp-server/           # Interactive MCP UI App Server (Vite / TypeScript)
 │   ├── src/                      # Client UI widget logic & MCP tools
 │   ├── server.ts                 # Stdio / HTTP MCP server implementation
@@ -96,7 +113,10 @@ agent-ecg/
 │   ├── seed_ecg_analytics.sql    # DML/DDL schema definitions for ECG analytics
 │   ├── pipeline.py               # Unified deployment & verification pipeline
 │   └── verify_bulletproof_suite.py # 8-step live Reasoning Engine verification suite
-├── tests/                        # Comprehensive unit & integration test suite (32 tests)
+├── tests/                        # Comprehensive unit, integration & golden eval test suite (52 tests)
+│   ├── golden_dataset.json       # Ground-truth evaluation benchmark cases
+│   ├── test_golden_eval.py       # Automated regression benchmarking harness
+│   └── ...                       # Unit and mock gateway integration tests
 ├── docs/                         # Walkthroughs, prompt guides, and execution plans
 ├── spec.md                       # Canonical BMAD technical specification (French)
 ├── pyproject.toml                # Python project metadata & uv dependencies
@@ -162,14 +182,33 @@ npm run serve:stdio
 
 ---
 
+## 🏗️ Infrastructure Provisioning with Terraform (IaC)
+To provision or update the Google Cloud foundational resources (BigQuery dataset and tables, native Firestore database, Secret Manager credentials, and IAM service accounts):
+
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply -auto-approve
+cd ..
+```
+
+---
+
 ## 🧪 Testing & Verification
 
-The project includes an exhaustive test suite covering unit logic, mock API gateways, NL-to-SQL generation, and live BigQuery execution.
+The project includes an exhaustive test suite covering unit logic, mock API gateways, NL-to-SQL generation, automated golden dataset regression benchmarking, and live BigQuery execution.
 
-### Run Unit & Integration Tests
-Execute the full pytest suite (32 tests) across all agents and MCP tools:
+### Run Full Test Suite & Golden Eval Harness
+Execute the full pytest suite (52 tests across unit logic, MCP tools, and ground-truth golden trajectories):
 ```bash
 uv run pytest
+```
+
+### Run Dedicated Golden Dataset Regression Benchmarking
+To execute static regression verification against ground-truth benchmarks in [`tests/golden_dataset.json`](./tests/golden_dataset.json):
+```bash
+uv run pytest tests/test_golden_eval.py -v
 ```
 
 ### Seed Live BigQuery Analytics Data

@@ -1,4 +1,4 @@
-"""Automated Golden Dataset Evaluation Suite for ECG Multi-Agent System.
+"""Automated Golden Dataset Evaluation Suite for Company Multi-Agent System.
 
 Executes static regression benchmarking against ground-truth trajectories in `golden_dataset.json`,
 verifying intent classification accuracy, SQL keyword generation, HITL interception rules,
@@ -9,7 +9,7 @@ import json
 import os
 import pytest
 from typing import Dict, Any, List
-from src.agents.supervisor import ECG_Supervisor_Agent, StateSession
+from src.agents.supervisor import Company_Supervisor_Agent, StateSession
 from src.observability import scrub_pii, scrub_string
 
 
@@ -25,8 +25,8 @@ GOLDEN_CASES = load_golden_dataset()
 
 @pytest.fixture
 def supervisor():
-    """Returns a fresh instance of the ECG Supervisor Agent."""
-    return ECG_Supervisor_Agent()
+    """Returns a fresh instance of the Company Supervisor Agent."""
+    return Company_Supervisor_Agent()
 
 
 @pytest.mark.parametrize("case", GOLDEN_CASES, ids=lambda c: c["test_id"])

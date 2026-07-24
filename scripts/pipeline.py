@@ -62,8 +62,8 @@ def run_step_1_deploy(project: str, region: str, re_id: str) -> str:
         f"--region={region}",
         f"--agent_engine_id={re_id}",
         f"--session_service_uri={session_uri}",
-        "--display_name=ECG Supervisor Agent",
-        "agent_ecg"
+        "--display_name=Company Supervisor Agent",
+        "agent_company"
     ]
     
     print(f"Running: {' '.join(cmd)}\n")
@@ -140,7 +140,7 @@ def main():
     re_id = args.reasoning_engine_id.split("/")[-1]
     
     print("==================================================================")
-    print(" 🚀 ECG Agent In-Place Update, Verification & Registration")
+    print(" 🚀 Company Agent In-Place Update, Verification & Registration")
     print("==================================================================")
     print(f" Project ID          : {args.project}")
     print(f" Region              : {args.region}")

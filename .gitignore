@@ -11,3 +11,5 @@ agent_ecg_tmp*
 src/agents/__pycache__/yield_analytics.cpython-313.pyc
 src/agents/__pycache__/supervisor.cpython-313.pyc
 src/__pycache__/config.cpython-313.pyc
+evaluation_spec/*
+client_secret_*.json

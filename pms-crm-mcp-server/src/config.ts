@@ -1,8 +1,8 @@
 /**
- * Configuration and Helper for ECG PMS & CRM MCP App
+ * Configuration and Helper for Company PMS & CRM MCP App
  */
 
-const FALLBACK_API_DOMAIN = "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app";
+const FALLBACK_API_DOMAIN = "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app";
 
 export function isEmbeddedInHost(): boolean {
   try {

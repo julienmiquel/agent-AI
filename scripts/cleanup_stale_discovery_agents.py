@@ -2,7 +2,7 @@
 """Cleans up stale / duplicate registered agents in Gemini Enterprise.
 
 Deletes old/stale agent resources under default_assistant so Gemini Enterprise UI
-always routes new turns to the active ECG Supervisor Agent.
+always routes new turns to the active Company Supervisor Agent.
 
 Usage:
     python3 scripts/cleanup_stale_discovery_agents.py [--project PROJECT] [--engine-id ENGINE_ID] [--keep-agent-id KEEP_ID]

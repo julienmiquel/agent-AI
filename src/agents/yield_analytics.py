@@ -1,7 +1,7 @@
 """Yield Analytics Agent & BigQuery NL-to-SQL Execution.
 
 Provides natural language to SQL translation for campsite cluster yield metrics,
-executing parameterized queries against the BigQuery `ecg_analytics` dataset.
+executing parameterized queries against the BigQuery `company_analytics` dataset.
 """
 
 import logging
@@ -12,7 +12,7 @@ from src.config import BIGQUERY_DATASET, GCP_PROJECT_ID, MODEL_YIELD
 logger = logging.getLogger(__name__)
 
 
-def query_ecg_yield_data(
+def query_company_yield_data(
     cluster_id: str,
     start_date: str = "2026-07-01",
     end_date: str = "2026-07-31",
@@ -32,7 +32,7 @@ def query_ecg_yield_data(
         Structured dictionary containing execution status, parameterized SQL queries, computed yield
         metrics (occupancy rate, AVPN, RevPAR), lagging market callouts, and frontend widget payload.
     """
-    logger.info("query_ecg_yield_data called: cluster_id='%s', window='%s to %s', target_market='%s'",
+    logger.info("query_company_yield_data called: cluster_id='%s', window='%s to %s', target_market='%s'",
                 cluster_id, start_date, end_date, target_market)
 
     # 1. Parameter Validation
@@ -159,7 +159,7 @@ def query_ecg_yield_data(
     }
 
 
-def compare_ecg_yield_data(
+def compare_company_yield_data(
     cluster_id: str,
     current_start: str = "2026-07-01",
     current_end: str = "2026-07-31",
@@ -185,7 +185,7 @@ def compare_ecg_yield_data(
         Structured response containing status, comparative SQL queries, period metrics, variance deltas,
         held-back units, and Yield Comparative Analytics Widget payload.
     """
-    logger.info("compare_ecg_yield_data called: cluster_id='%s', current='%s to %s', prior='%s to %s'",
+    logger.info("compare_company_yield_data called: cluster_id='%s', current='%s to %s', prior='%s to %s'",
                 cluster_id, current_start, current_end, prior_start, prior_end)
 
     # 1. Parameter Validation
@@ -540,7 +540,7 @@ class Yield_Analytics_Agent:
         parsed_params = self.parse_prompt(prompt, session)
 
         if parsed_params.get("is_comparative"):
-            result = compare_ecg_yield_data(
+            result = compare_company_yield_data(
                 cluster_id=parsed_params["cluster_id"],
                 current_start=parsed_params["current_start"],
                 current_end=parsed_params["current_end"],
@@ -599,7 +599,7 @@ class Yield_Analytics_Agent:
                 "message": msg,
             }
 
-        result = query_ecg_yield_data(
+        result = query_company_yield_data(
             cluster_id=parsed_params["cluster_id"],
             start_date=parsed_params["start_date"],
             end_date=parsed_params["end_date"],

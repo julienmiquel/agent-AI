@@ -70,7 +70,7 @@ def resolve_imagen_asset_uri(
         cluster: Target cluster identifier (e.g. 'MEDITERRANEAN_SOUTH').
 
     Returns:
-        GCS URI string formatted as 'gs://ecg-marketing-assets/genai/banners/{market}_{cluster}_july.png'.
+        GCS URI string formatted as 'gs://company-marketing-assets/genai/banners/{market}_{cluster}_july.png'.
     """
     mkt = str(target_market or "nl").strip().lower()
     cls = str(cluster or "mediterranean_south").strip().lower().replace(" ", "_")

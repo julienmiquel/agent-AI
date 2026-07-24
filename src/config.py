@@ -1,4 +1,4 @@
-"""Centralized Configuration for ECG Multi-Agent System.
+"""Centralized Configuration for Company Multi-Agent System.
 
 Defines model tiers, dataset names, API endpoints, and system defaults.
 """
@@ -16,14 +16,14 @@ MODEL_MARKETING = os.getenv("MODEL_MARKETING", "gemini-2.5-pro")
 
 # GCP & BigQuery Settings
 GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID", "customer-demo-01")
-BIGQUERY_DATASET = os.getenv("BIGQUERY_DATASET", "ecg_analytics")
+BIGQUERY_DATASET = os.getenv("BIGQUERY_DATASET", "company_analytics")
 
 # API Endpoints (Apigee REST Gateway)
-APIGEE_PMS_ENDPOINT = os.getenv("APIGEE_PMS_ENDPOINT", "https://api.ecg.camp/pms/v1")
-APIGEE_MARKETING_ENDPOINT = os.getenv("APIGEE_MARKETING_ENDPOINT", "https://api.ecg.camp/marketing/v1")
+APIGEE_PMS_ENDPOINT = os.getenv("APIGEE_PMS_ENDPOINT", "https://api.company.camp/pms/v1")
+APIGEE_MARKETING_ENDPOINT = os.getenv("APIGEE_MARKETING_ENDPOINT", "https://api.company.camp/marketing/v1")
 
 # GCS Asset Storage
-GCS_MARKETING_BUCKET = os.getenv("GCS_MARKETING_BUCKET", "gs://ecg-marketing-assets/genai/")
+GCS_MARKETING_BUCKET = os.getenv("GCS_MARKETING_BUCKET", "gs://company-marketing-assets/genai/")
 
 # System Operational Defaults
 DEFAULT_CYCLE_TIME_SLA_SECONDS = 300  # < 5 minutes

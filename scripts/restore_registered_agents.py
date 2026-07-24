@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Restores and registers all required ECG agents in Gemini Enterprise.
+"""Restores and registers all required Company agents in Gemini Enterprise.
 
 Re-creates:
-1. ECG PMS (Resalys Inventory Assistant)
-2. ECG Marketing CRM (CRM Flash Campaign Assistant)
-3. ecg_analytics (BigQuery Analytics Assistant)
-4. ECG (Base ECG Assistant)
+1. Company PMS (Resalys Inventory Assistant)
+2. Company Marketing CRM (CRM Flash Campaign Assistant)
+3. company_analytics (BigQuery Analytics Assistant)
+4. Company (Base Company Assistant)
 
 Usage:
     python3 scripts/restore_registered_agents.py [--project PROJECT] [--engine-id ENGINE_ID]
@@ -25,7 +25,7 @@ DEFAULT_ENGINE_ID = os.environ.get("GEMINI_ENTERPRISE_ENGINE_ID", "gemini-enterp
 REASONING_ENGINE_NAME = "projects/1008225662928/locations/us-central1/reasoningEngines/3550315899263123456"
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Restore ECG Agents in Gemini Enterprise")
+    parser = argparse.ArgumentParser(description="Restore Company Agents in Gemini Enterprise")
     parser.add_argument("--project", default=DEFAULT_PROJECT, help="GCP Project ID")
     parser.add_argument("--engine-id", default=DEFAULT_ENGINE_ID, help="Gemini Enterprise Engine ID")
     return parser.parse_args()
@@ -83,10 +83,10 @@ def main():
     print("==========================================================")
 
     agents_to_restore = [
-        ("ECG PMS", "Assistant ECG d'inventaire PMS Resalys", REASONING_ENGINE_NAME),
-        ("ECG Marketing CRM", "Assistant ECG de gestion des campagnes marketing CRM", REASONING_ENGINE_NAME),
-        ("ecg_analytics", "Assistant ECG d'analyse des données BigQuery & Yield Analytics", REASONING_ENGINE_NAME),
-        ("ECG", "Assistant ECG Général", REASONING_ENGINE_NAME),
+        ("Company PMS", "Assistant Company d'inventaire PMS Resalys", REASONING_ENGINE_NAME),
+        ("Company Marketing CRM", "Assistant Company de gestion des campagnes marketing CRM", REASONING_ENGINE_NAME),
+        ("company_analytics", "Assistant Company d'analyse des données BigQuery & Yield Analytics", REASONING_ENGINE_NAME),
+        ("Company", "Assistant Company Général", REASONING_ENGINE_NAME),
     ]
 
     for name, desc, re_path in agents_to_restore:

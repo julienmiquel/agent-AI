@@ -1,8 +1,8 @@
 {
-  "name": "@ecg/pms-crm-mcp-server",
+  "name": "@company/pms-crm-mcp-server",
   "version": "1.0.0",
   "type": "module",
-  "description": "European Camping Group (ECG) PMS & CRM Interactive MCP UI App Server",
+  "description": "European Camping Company (Company) PMS & CRM Interactive MCP UI App Server",
   "main": "dist/server.js",
   "scripts": {
     "build:app": "node build-apps.js",

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""BigQuery Seeder Script for European Camping Group (ECG) Yield Analytics.
+"""BigQuery Seeder Script for European Camping Company (Company) Yield Analytics.
 
-Loads DDL and DML data into BigQuery dataset `ecg_analytics` (`occupancy_daily` and `booking_segments`).
+Loads DDL and DML data into BigQuery dataset `company_analytics` (`occupancy_daily` and `booking_segments`).
 Supports dry-run verification mode and active Google Cloud BigQuery execution.
 """
 
@@ -19,7 +19,7 @@ try:
     from src.config import BIGQUERY_DATASET, GCP_PROJECT_ID
 except ImportError:
     GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID", "customer-demo-01")
-    BIGQUERY_DATASET = os.getenv("BIGQUERY_DATASET", "ecg_analytics")
+    BIGQUERY_DATASET = os.getenv("BIGQUERY_DATASET", "company_analytics")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 def run_seeder(project_id: str, dataset_id: str, dry_run: bool = False) -> bool:
     """Executes or prints BigQuery seeding DDL and DML scripts."""
-    sql_file = PROJECT_ROOT / "scripts" / "seed_ecg_analytics.sql"
+    sql_file = PROJECT_ROOT / "scripts" / "seed_company_analytics.sql"
     if not sql_file.exists():
         logger.error("SQL file not found at '%s'", sql_file)
         return False
@@ -35,8 +35,8 @@ def run_seeder(project_id: str, dataset_id: str, dry_run: bool = False) -> bool:
     sql_content = sql_file.read_text(encoding="utf-8")
 
     # Replace default dataset/project placeholders if customized
-    sql_content = sql_content.replace("`ecg_analytics`", f"`{dataset_id}`")
-    sql_content = sql_content.replace("`ecg_analytics.", f"`{project_id}.{dataset_id}.")
+    sql_content = sql_content.replace("`company_analytics`", f"`{dataset_id}`")
+    sql_content = sql_content.replace("`company_analytics.", f"`{project_id}.{dataset_id}.")
 
     if dry_run:
         logger.info("=== DRY-RUN MODE: Prepared SQL for Project '%s', Dataset '%s' ===", project_id, dataset_id)
@@ -81,7 +81,7 @@ def run_seeder(project_id: str, dataset_id: str, dry_run: bool = False) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Seed BigQuery tables for ECG Yield Analytics.")
+    parser = argparse.ArgumentParser(description="Seed BigQuery tables for Company Yield Analytics.")
     parser.add_argument("--project", default=GCP_PROJECT_ID, help="GCP Project ID")
     parser.add_argument("--dataset", default=BIGQUERY_DATASET, help="BigQuery Dataset ID")
     parser.add_argument("--dry-run", action="store_true", help="Print prepared SQL without executing")

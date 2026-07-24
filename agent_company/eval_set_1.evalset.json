@@ -48,7 +48,7 @@
           "intermediate_data": {
             "invocation_events": [
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -61,7 +61,7 @@
                           "prior_start": "2025-07-01",
                           "cluster_id": "MEDITERRANEAN_SOUTH"
                         },
-                        "name": "compare_ecg_yield_data"
+                        "name": "compare_company_yield_data"
                       },
                       "thought_signature": "CusKAY89a18b5Zhvm7kF-Y5HOviuCfAegOQdnR-1lwNyRjNEAALcgZb0gSDOl4ddVzX5yYadsHA78N0QiaSXA81igZ96srt5arLKpwowzi2ZerMMBS6DTekfiK20FwPAulEHcLI-doO6H-1rfbx2BchHkEY6WyPFs3j1bGvmmYXxzM55Pijf5GPU1nMHewllBltlhF4Ux80lsPkw4kP8b0BMR6Yz_fjXNI74ezuVZsCfCBhMhru7MUKfXhmJigYweiwZMQ2xacTaCBMd6UXnjVUDIFA8Gk1ZnnuI7DKlkf9Y8_m8CseFl7bzJIBzBVEvnQhtqbVefTvF7D8Rfq4JqOPjzItmhRmSgkBPWkmzQ_TQYKJiQL4r-WLr71lJzgjZH1dJCjYfDUawImhGrwua5TnhE17k3F0w35do0Ra5YtuOszz3bIPdjnPlc49NOgwEhmHg2Y5Zd4Rmzzm-cSAhsY6iOMkzlOlHN_8pzqbL23D1GNnPtugzknTG8AB9r6RB5hSw3fg9O9b4ZSZFjCwkAjAJ7o7EoEKOj1T2LHe2Jmp2UGb9cvmZ1dy4cANbfcVolHVG20lumgtOkofDbGZO_AdaorOIpUGvfKowa_xQT6ptqpfUGqJVMJMDeTV2wveWkWuNxhsQZY0qqvyWBVW-bT9pbM-V8oLIvCk4PXSsH-HdFVjFo_HTCENb5AHrNcrYZ_L0S-r1wLqZ3eCRsA7hNTZAxQ-tJMWWN8SVDbhvuJaRE6XszZEpD2BJMDNnHduX2lwK2sFZTaNtb0NQ2_I6AEeMmQJ4hxe6qPRsWjh70dBwamHW1kGCB8432aBIpYB_ZzrIhtMJSSYWDwqOXiaYrBxkhy8pBiJIu72ENeUi1tiLJYzwPuwWE1Tl9d5jLwIa7dYcJDOFFb32kddHbowh7aIek3Ynv54zkBDDlpWkhty0nqLiEbAmhaJJnL6xtOrHob2Ki_QYHjA5faMLSg7TRSs4FQrXd2b6BTWkUY-O0mLKONqjznfhxDT14abmlcTO7MqFifGErNg96253Ybgut-LCY-cCji7g3Z4eQo3TM-TK9xpA4RpUP2ZUvXIRzOaZP1nRuoU5c_WiJkQm2oVtLFTcIHeB379Thz2cYy5g1S13BN6_pgDlfPiXHXv2j6mZ1W-oAu2leRKBYp1VUTzDMyas5mVHv0wACN1_J2plV1Eo0VWvoxwx50Qoo-geB6i7gUpB-fClUQcGMFp1YP9f19BXLE9SwLAfww3u3bAYJAq5oDP3p7KJiL_t4be5XwwbVDipoKY_puoctmvd1sY0D7U1God6_YdPG3-BHcOb9XVovlq9qN7DEOay5E51j4xy5v1K54hwQ92-lO5UOHXp7_PvCAqnueywoqO0sWQ4OvMUi15M-aCnXAas2fcCYhF-jbBALzCyuxs7nf9rOUAvIkvnWhbsyzgVl7cHqohZxtaCsxQ35x1KqOIjOXcb5LYME6CkjjJf_JsV6ZtRwBIEfd2rufxakWxb2AEyJAJjzw_xmITrJc4nuZCf3RQwPVM-1cFy_AnEgmiwa3VXAUqR8ZQ93AXbhSleSjwQ5BGO1CKwNkAn1FNnZMk7UvTSFL34h9zbf42J0a6sJRD1o_lB0Qdx8HHG-63bEpz5wqp_IHr7ibfWV3W91470NX5g-yEIykmd1qBxM8rdE8WztiPXILde6GdjwGi8AduaESPRjPXP_bKCJVLMQjJ83M995YtAb_L2d1DWD0HjPQ65Ki48ZxHmwGSckKqwWQvd5xDDITCeGl4dVgmLBkB_W6DjpUlU3wjVrxnnu0oY_sGCCIR5cI6JO8nE6Q2ACG-UcAC1RJ9WYdSTeN2aJu5IptAuWw=="
                     }
@@ -70,19 +70,19 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
                       "function_response": {
                         "id": "adk-81686ae2-9513-497e-9957-d2063497d48e",
-                        "name": "compare_ecg_yield_data",
+                        "name": "compare_company_yield_data",
                         "response": {
                           "status": "SUCCESS",
                           "sql_queries": [
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
-                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.ecg_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
+                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.company_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
                           ],
                           "metrics": {
                             "current_period": {
@@ -203,7 +203,7 @@
           "intermediate_data": {
             "invocation_events": [
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -213,7 +213,7 @@
                           "cluster_id": "MEDITERRANEAN_SOUTH",
                           "target_market": "FR"
                         },
-                        "name": "compare_ecg_yield_data"
+                        "name": "compare_company_yield_data"
                       },
                       "thought_signature": "CusSAY89a19VlH8OQ3U4JO5inUhOAE1kT2oXAeTyYryeOtFUmZonBqqx0OWfT1XyzVK8Tqb7SV38lj5dBpFynTP-lXRThDE8L1lHVW0wCbVKjdKsiyNrL-mDe90643A6tXSlzzJndQGFnLN2r0rIb6eOa7gLJAtNMoIhRCYXNbts0H5J79yVwvgikkOYzRQo0YhqeQ8t055K6P_jCOybQd12DLd89SRmooJfLtIZrbRrjGH1IehNfOHn3l4lnvMKDIMTCWEywilWy9lLiGUx1dUjwr5bqlmXPaajz9qpX5cy_25Oj5uVDo4kbpIvRTEqRJxfRkY3LUnnnCVGlDfDZA2DnC3fFywfSehQWnCbLgAMcYlduMQJ1MDWiw3VBt6RtNjRjC7xYNcVI6xnK9RUG82PFgISPVx3Ug-sL76XXmtG1qH03_8yHCPe9GHjH8sqVxX0GdxjwiD2F4lVef_KSJWa4Iz8vf2Yj4Aikvx_TJIdTdyj_oxJqWD4GaK-LRFc0Ni9KBAs48OH_Ij05UrU8mVotnT4OtBcBGkeJjYDC9nCyBtAQKfwa35an0mTc7p2qjB3rPrAoxCKCeGR9-KMSc3PSHofTVaIYJpPM5cwzPlibUYFMTtLylwQIeAmlAx_fRKg4_UxmYEWyDKIDttA_97jF6ZbAdW7DeI55LaERaSiczDxGAWclMwIr_NKH1IqDLn0eN1JspCqIS_uO4Hg6PLy8YSrloduWqpB_mwqqmpL5RptXrdLv9RfNKJ5K5VKETUB7PjL-g6766gzjZMkLy_uaBxIKBfY_v7itSNsvl4XRTOasOKmu93V5GEGkgrKDH4ZwpqdZAnB1eF0ZXsodO29Z_F8qTPQ_mH2V4QabqSb01Mj2wWBmZQUl2EPdwVpYAquohFc910o6x6N_CHx5sQfSBQBTo-VevB3qHV10M7Z7nLr0zjY_ptFt339W56e5perSoQ8Q9mGymr5Bh9Cq6dZQJyLcIW4KCdUxpGYNyUpNCFeFReBo_OcoG9OcfLw8fezZ8fGs2S2VygnyC9Vd-4CAP16rax87phAtFf9pe565uak2tFHkemwYNL60PNdbryGzW1fQkShOWC_2Sr5km4UOJ119lbn2RjmL7KE5YSzWr1HEXOqrMrVPR52drj5HhRM6xhEhoUTOV2dqfMKgws5HXgxYQyvSZmOIS5Eilzk-nuwH0mMLc9fgs0QK23zoFO0xDjHcke0IqCv6QM1UZYsxgMV1DMU6RAcN6ifA676tn3FLOZvA1i-8RT4n6xOkjHLnEAVmzLeeF69dTozrZ9ZoDku22QFitlXlph18fVKzgxY21SUC78GrxkZQMjbQpGC874ux7zQzFpZcJT0QB4AMY2zkaDJ96sO7drScckz3F94yrNctBROPkCctHVQIYCbaUM3WTJpwyEy-YrLrChrZbKprfSvTv3TC1siNBCpPWeRQkoY1lVSwQMjuKub3DsK-lYyr-elzCNW8_6gUC15lDJENhDaAEYWxC9ZuFXZjWTnonH-ykU9rqZh3i2VmQ1siBFZQ5VJjPwcnNICtho-BZPsmTrw6eRN34DFAaf-fYBFRliZEaO9JplIsviOOokXDtC1syREhexz2XPLN47aoCFT62Ggwv2RP6SMdWpsWLexkch8haiUEQIHkONE_yQqDGmEZ6O2QzVDTqR_wdC8a9HiGb3oVDvTZg1c98OAr0dLq-21oi4zMLgAR3aMnIm9hwLWLaNAGhmg2Y6R4JmotSWSeg2ijTGa0Ks8i1nF3wzv2Vj06q65k7YRc8FWcyT93xvzJ3kIjPrVm58T0vjKOKY8yOkW3oEShaatzDzfsziEazDwHyw31JdOtEr8x0NkS5Qr9Lmfnleo4K9bMIGes8ylPgBtk1y7663mav0xPDDsbXnzhZJ_Q6a4Jk_3Q0JYjmlKz3i85CtVgelRDig7anGZKUL0e4D_w5uTyNSTl86R_2EZ1oHgKwXaH9Jk4Oo1Q_k9PVp_zyxJzsnAlI2VJaf4XE9KHQtHBRZQNxWSEXtWspoi4Ra0W2nEt1E63ra6eCR-QQoDVu8evkSwWlY8DVMfJ4TbL9iCUHaI9AAb1J42ua9MKTQpUhyKt6WTJcbs9-gMAvEi1RBG_cuekH27TLd9RSI45SDIDvP11PPrAoZbuDyXIvX-c-OmEvgPRl6MlRSmXzzuXk2ISiqn0-XlcwATkDz7mn8eMxRvFihMrfla98vhpuiARIM5OtODoZo2fxHVmz4ae7Di3AGRUjoFXgsKrrZLYe91aSfRnBl0_CqbHlAwpOgeDhCIsRlByCXpypte7YriZGU1GiLov4_RZrKxuhtJbkJ-rnLMQH5uePfikyviyKvoLdL3to1nf8exy6JOAyxJ-iqBSd8MdrKOAq-SrqPYMMVcYQQC21xxnklvN5xvcefC_6M8YRkXXfj0jjWiU74cWR2gnm4PTAW_CfDa-TpugRP-OWLzxH2sJ3UGrNQ2ae4e1EBvCR65OXkvybpuzy_uUHypojezIdY-lVRlMnzpvKiFnWbMC6tFTY82-1T_grgEmdxJADnHkQb43Qmy5Wv3ac_ApgU3RJsgRQEQEaRcvH3zfUG5IdggJ2CP7W0PsPVMICv5m5F1eccaU7jfzBUbdQLdBi1SDKS55NJwEEQ2Q7hadL3zRiNHxXdW9zTC56w66ucLwPWK3To0aH7lxAXWxHBMUIfebNFSDg8H9573elUjcbeZ2CqPrPX1JwpRn8t2xNCloxASx8Ye68DFVHdkaEoG_OV1aStJ1JTktsmpCuE57Mtktv7oX0ciH6TYaya3NtNWY1kSx6FWS98U9SelMHHnuD103VDQYMHiq-qrHqVid0UPveBzHjEbcN-ADOMI4ci12XB_zZBQFTHvu4M7JB7nHGjpZ2KqOGUSbulH3xFQpt2-wkGi77LZOQKKJjGjxO2yFn02gHRW0Ak6VruaOihJtkCCNoPlql2hYBF6crbRS744FZhGepnNIDRAdFjRQbLCRS8eUBQX623HmuFfylfe8XtnwLELVoG_OjoG58niMxp3HxuX5YURvUfSdE9A969_B6A1FvEn2LIyaGpfOEFGVQSuS92UfZ64qwxeChwOxehqcQhVo5BQIY6kDEDJHBA2VcW7zPz1HNqZqozna5Syj5cEI_RzaWzICyP2waYGognZy1e3bTMVFfIudkmMYK6oj0WOPblHt7CuCvW6oaYGdxQ="
                     }
@@ -222,19 +222,19 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
                       "function_response": {
                         "id": "adk-e3dd5154-4e94-4371-9123-461f6ceb0271",
-                        "name": "compare_ecg_yield_data",
+                        "name": "compare_company_yield_data",
                         "response": {
                           "status": "SUCCESS",
                           "sql_queries": [
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
-                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.ecg_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
+                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.company_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
                           ],
                           "metrics": {
                             "current_period": {
@@ -308,7 +308,7 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -318,7 +318,7 @@
                           "cluster_id": "MEDITERRANEAN_SOUTH",
                           "target_market": "NL"
                         },
-                        "name": "compare_ecg_yield_data"
+                        "name": "compare_company_yield_data"
                       },
                       "thought_signature": "CsAFAY89a1922rMdsRAFPJf7iix72ALZiFABbO2XQbgUugi_P2w_5AMphqgzH1b4Zyd1xYLYofDh_7b6QPJPQN3fKyCB4uV9xx4QcWokJpd2Aln6p6ilv6sOMibrDACb2snsAjMMoGsSJ7uycdXxEKcgKiLBv_fpucbLFQTQ69GzrFf88mfKE7pzce3cCcPCT-gYZ5IZxGaZ7T5pIGyeHGmI9jgu1-vK3Y9hWhzeUir17DgABkleATCAIga5KUwRYTq74db6WttYsOwiTag5ZpAeE0oacoiR0tgE3rEGDqrkfKBlfEo-vUufpbM9kUprc5yU5f-QdJ1l7kQ5l34goWRiOTkd54IjBbjNW1VchmT5EgbNUuALaGBLaMjvBvym9jQTXCIFJCQeIEUhFhIMu3oIcK4XQMpsO0KZvkYtdhGh4ROEWeD08xAk8C8mHu8ba62vZW2Tail6hhzvn6F-o-18UvPRbTSLsMib5erQAYPdfl3I2_ZlgCODZvF0zZUyjjjB92XeVS2UgKB81cIUNj27yB2JUYzA3u3b63LK49MGmIjr0NjlKV-xtnhGrojGYAJzeW8X6EjhPSIAdxeOCgan1gQt0vyv4WEvs_E-Km_jo--lBNwE2T7ALn_f3RCO8ioybQfWLyPQJTOJyqIXtfre9H-XPELFIGsGgTrR6AFjQ1doR02G01OAgAYBmpgWijbvHk8Rfj1T5rk5a736BqkxWE3M7csW6pPEVQt0yGN2ufCEVsa3MnxYk3W7IHIUUAmsNRDT3UFz_tHh53dNuuam0L7ztS5M9vU4UhQiDUd8vd4KlMsDUqnXgMymDkgxEW5MxSnmPBeHyVA3zpp7KejuV-5cmKv0uZAcvD2wCuKm8UbD4hdJhCtVCQcQm4_Pqgu-DHBTNO0-b4pldWm6h3JRLFsb1lxEgSj3A0EqhmTQWvE="
                     }
@@ -327,19 +327,19 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
                       "function_response": {
                         "id": "adk-523cae94-eacd-4b98-8ffc-b18479e8b3b4",
-                        "name": "compare_ecg_yield_data",
+                        "name": "compare_company_yield_data",
                         "response": {
                           "status": "SUCCESS",
                           "sql_queries": [
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
-                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.ecg_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
+                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.company_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
                           ],
                           "metrics": {
                             "current_period": {
@@ -413,7 +413,7 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -423,7 +423,7 @@
                           "cluster_id": "MEDITERRANEAN_SOUTH",
                           "target_market": "DE"
                         },
-                        "name": "compare_ecg_yield_data"
+                        "name": "compare_company_yield_data"
                       },
                       "thought_signature": "CsUGAY89a19ZoxYyjeKI4G3uGb1yvA8MPKq6YyHxuOoJMq6eD7t8vBvMBp-4OCtNzDxVhonEHZYHrwfuwLhOF2XwJ68t7eSZgKUTfof9QOJ4Z1tGNBirBrRb1vRv6IsBvZxCV5lUXLn7pyvY4lswUabx48PsGhoVPS7EBHz-wiedNIks9U8ZUmrrbGeiBLRYLbJmz5CQGrzJv4LLGTVORy4NKPFr3_-LU4dVmNT_MOcABvITUyW9vz6U4-ZZEkTFChlRmcPgdTwdllRNPIAwNUUceMcT3IwOEHWEqIA82e5q_M_8QJ-trPyW4gHnXtYpRclkVF4bV6nVuVYhGJgx5jJ6OdQfITAwab6oVHXB6G_FkV5R5Nly5UsVrjUzUBTHp4E5f0e6S2b-mg7C3YhCmznHsvPWkaebmJ_5FJjdNOKkfi1jgSAe3sBw5ccDIU5D5ZLSPUcVqhHBMGloZXbXXAV4EwGsruesA7csHmKwlLS2H78rEj3PZBwvZ27l2A5arD5qOWfptU_N3MpIXBREu0eO6X56bqO8q6ZILmvbBRMWeskLoV9uZWHpSUgRa2jfBKEOYa4nL_3Zo9QjYWEDmF75_7UBU1qyp4_EVN0q2KXVn6bAgZ0DzjY2FG0JIPFyxvdBMI21fxx95OuU03j6JRtl1Ortssv1kg6xUBuc6lOw0HgC7jX61CxR_OhN78qIDfs1Cz9lB7QMmfzQsWyxCUOZqHzdBkX7yn7Q2KwQxWMnN_cvY9gjhOdvIuSSH4AN8oFGiDJM9VTWCV30lt0mAckddbdumE0_RrDrzTVkGl4a23qJByW-dOoVeQm37W6jhrD_VJGyok88OJaP1Ug3GIH-tuaLEdPiFEJzPAzhsIGC_jjbvAoLdta_bjcyWARaeeGc9-JRkQQVrkfjl-ztJc1RiCavgotMr3eQcx_M3X8L-Qqdzs4-LZt_k71tZqeZrBhx4wyw50spXa_5G6h0UjMCiS9C8KgCmb6xgnMqusJgUM6kUocBRdwlNrxqieI5y-LxsP6auFWcq6pZgqToQEhzAYQDStgLTfd15MvFELkD-GBQQA2PHAEDOr4ixM7bbAlMBYyxupic7k1yIhPmXMyaEZlKLmzM"
                     }
@@ -432,19 +432,19 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
                       "function_response": {
                         "id": "adk-dd54fd0d-3d0e-493d-985e-512bf4774748",
-                        "name": "compare_ecg_yield_data",
+                        "name": "compare_company_yield_data",
                         "response": {
                           "status": "SUCCESS",
                           "sql_queries": [
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
-                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.ecg_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
-                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.ecg_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2026-07-01' AND '2026-07-31'",
+                            "SELECT\n  SAFE_DIVIDE(SUM(occupied_units), SUM(total_capacity)) AS occupancy_rate,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(nights_sold)) AS avpn_eur,\n  SAFE_DIVIDE(SUM(total_revenue), SUM(total_capacity)) AS revpar_eur\nFROM `customer-demo-01.company_analytics.occupancy_daily`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND date BETWEEN '2025-07-01' AND '2025-07-31'",
+                            "SELECT\n  campsite_id,\n  unit_id,\n  status\nFROM `customer-demo-01.company_analytics.booking_segments`\nWHERE cluster_id = 'MEDITERRANEAN_SOUTH'\n  AND status = 'HELD_BACK'"
                           ],
                           "metrics": {
                             "current_period": {
@@ -542,7 +542,7 @@
           "intermediate_data": {
             "invocation_events": [
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -567,7 +567,7 @@
                 }
               },
               {
-                "author": "ECG_Supervisor_Agent",
+                "author": "Company_Supervisor_Agent",
                 "content": {
                   "parts": [
                     {
@@ -585,7 +585,7 @@
                           ],
                           "updated_count": 4,
                           "new_status": "AVAILABLE_FOR_SALE",
-                          "endpoint": "https://api.ecg.camp/pms/v1/units/status",
+                          "endpoint": "https://api.company.camp/pms/v1/units/status",
                           "headers": {
                             "Authorization": "Bearer mock_cloud_identity_token_julien",
                             "Content-Type": "application/json"
@@ -602,7 +602,7 @@
                             ],
                             "updated_status": "AVAILABLE_FOR_SALE",
                             "updated_count": 4,
-                            "endpoint": "https://api.ecg.camp/pms/v1/units/status",
+                            "endpoint": "https://api.company.camp/pms/v1/units/status",
                             "identity_scope": "CloudIdentity (mock_cloud_identity_token_julien)"
                           },
                           "message": "Successfully updated 4 unit(s) (MH-102, MH-103, MH-104, MH-105) at LA_SIRENE_06 to status 'AVAILABLE_FOR_SALE' in Resalys PMS."
@@ -619,7 +619,7 @@
         }
       ],
       "session_input": {
-        "app_name": "agent_ecg",
+        "app_name": "agent_company",
         "user_id": "user"
       },
       "creation_timestamp": 1784561367.493957

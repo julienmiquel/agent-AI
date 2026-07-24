@@ -2,7 +2,7 @@
 
 import pytest
 from src.agents import (
-    ECG_Supervisor_Agent,
+    Company_Supervisor_Agent,
     Marketing_Campaign_Agent,
     StateSession,
     crm_create_flash_campaign,
@@ -32,10 +32,10 @@ def test_localized_promotional_copywriting():
 
 def test_resolve_imagen_asset_uri():
     uri_nl = resolve_imagen_asset_uri("NL", "MEDITERRANEAN_SOUTH")
-    assert uri_nl == "gs://ecg-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
+    assert uri_nl == "gs://company-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
 
     uri_de = resolve_imagen_asset_uri("DE", "ATLANTIC_NORTH")
-    assert uri_de == "gs://ecg-marketing-assets/genai/banners/de_atlantic_north_july.png"
+    assert uri_de == "gs://company-marketing-assets/genai/banners/de_atlantic_north_july.png"
 
 
 def test_crm_create_flash_campaign_success():
@@ -52,7 +52,7 @@ def test_crm_create_flash_campaign_success():
     assert res["target_segment_id"] == "SEG_NL_PAST_GUESTS_MED_2025"
     assert res["discount_percentage"] == 15
     assert "Profiteer van 15% korting" in res["copywriting_text"]
-    assert res["image_asset_gcs_uri"] == "gs://ecg-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
+    assert res["image_asset_gcs_uri"] == "gs://company-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
     assert res["widget"]["widget_type"] == "MARKETING_CAMPAIGN_DRAFT"
 
 
@@ -75,7 +75,7 @@ def test_non_string_type_safety():
     assert "Profiteer van 15% korting" in copy
 
     uri = resolve_imagen_asset_uri(target_market=123, cluster="MEDITERRANEAN SOUTH")
-    assert uri == "gs://ecg-marketing-assets/genai/banners/123_mediterranean_south_july.png"
+    assert uri == "gs://company-marketing-assets/genai/banners/123_mediterranean_south_july.png"
 
 
 def test_marketing_campaign_agent_process_turn_with_session():
@@ -91,11 +91,11 @@ def test_marketing_campaign_agent_process_turn_with_session():
     assert "Flash_Promo_NL_MEDITERRANEAN_SOUTH" in res["campaign_name"]
     assert "Profiteer van 20% korting" in res["copywriting_text"]
     assert res["discount_percentage"] == 20
-    assert res["image_asset_gcs_uri"] == "gs://ecg-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
+    assert res["image_asset_gcs_uri"] == "gs://company-marketing-assets/genai/banners/nl_mediterranean_south_july.png"
 
 
 def test_marketing_campaign_hitl_interception_flow():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
     session.set("session.target_market", "NL")
     session.set("session.target_cluster", "MEDITERRANEAN_SOUTH")

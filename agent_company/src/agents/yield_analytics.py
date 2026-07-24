@@ -1,7 +1,7 @@
 """Yield Analytics Agent & BigQuery NL-to-SQL Execution.
 
 Provides natural language to SQL translation for campsite cluster yield metrics,
-executing parameterized queries against the BigQuery `ecg_analytics` dataset.
+executing parameterized queries against the BigQuery `company_analytics` dataset.
 """
 
 import logging
@@ -12,15 +12,27 @@ from src.config import BIGQUERY_DATASET, GCP_PROJECT_ID, MODEL_YIELD
 logger = logging.getLogger(__name__)
 
 
-def query_ecg_yield_data(
+def query_company_yield_data(
     cluster_id: str,
     start_date: str = "2026-07-01",
     end_date: str = "2026-07-31",
     target_market: Optional[str] = None,
     bq_client: Optional[Any] = None,
 ) -> Dict[str, Any]:
-    """Builds parameterized BigQuery SQL queries and computes yield metrics & widget payload."""
-    logger.info("query_ecg_yield_data called: cluster_id='%s', window='%s to %s', target_market='%s'",
+    """Builds parameterized BigQuery SQL queries and computes yield metrics & widget payload.
+
+    Args:
+        cluster_id: Campsite cluster identifier (e.g., 'MEDITERRANEAN_SOUTH', 'ATLANTIC_NORTH').
+        start_date: Start date of the analysis window in YYYY-MM-DD format (default: '2026-07-01').
+        end_date: End date of the analysis window in YYYY-MM-DD format (default: '2026-07-31').
+        target_market: Optional target market segment country code (e.g., 'NL', 'FR', 'DE').
+        bq_client: Optional Google Cloud BigQuery client instance for live database execution.
+
+    Returns:
+        Structured dictionary containing execution status, parameterized SQL queries, computed yield
+        metrics (occupancy rate, AVPN, RevPAR), lagging market callouts, and frontend widget payload.
+    """
+    logger.info("query_company_yield_data called: cluster_id='%s', window='%s to %s', target_market='%s'",
                 cluster_id, start_date, end_date, target_market)
 
     # 1. Parameter Validation
@@ -147,7 +159,7 @@ def query_ecg_yield_data(
     }
 
 
-def compare_ecg_yield_data(
+def compare_company_yield_data(
     cluster_id: str,
     current_start: str = "2026-07-01",
     current_end: str = "2026-07-31",
@@ -173,7 +185,7 @@ def compare_ecg_yield_data(
         Structured response containing status, comparative SQL queries, period metrics, variance deltas,
         held-back units, and Yield Comparative Analytics Widget payload.
     """
-    logger.info("compare_ecg_yield_data called: cluster_id='%s', current='%s to %s', prior='%s to %s'",
+    logger.info("compare_company_yield_data called: cluster_id='%s', current='%s to %s', prior='%s to %s'",
                 cluster_id, current_start, current_end, prior_start, prior_end)
 
     # 1. Parameter Validation
@@ -412,7 +424,16 @@ class Yield_Analytics_Agent:
     def parse_prompt(
         self, prompt: str, session: Optional[Any] = None
     ) -> Dict[str, Any]:
-        """Extract campsite cluster, date range, target market, and comparative parameters from prompt or session context."""
+        """Extract campsite cluster, date range, target market, and comparative parameters from prompt or session context.
+
+        Args:
+            prompt: Natural language string provided by the user.
+            session: Optional active StateSession instance containing stateful conversational context.
+
+        Returns:
+            Dictionary containing extracted cluster_id, analysis date window, target market, campsite_id,
+            and comparative intent flags.
+        """
         logger.debug("Yield_Analytics_Agent parsing prompt: '%s'", prompt)
         prompt_lower = prompt.lower() if prompt else ""
 
@@ -504,12 +525,22 @@ class Yield_Analytics_Agent:
     def process_query(
         self, prompt: str, session: Optional[Any] = None, bq_client: Optional[Any] = None
     ) -> Dict[str, Any]:
-        """Processes a natural language yield query, generating BigQuery SQL and returning yield widget payload."""
+        """Processes a natural language yield query, generating BigQuery SQL and returning yield widget payload.
+
+        Args:
+            prompt: Natural language user query.
+            session: Optional active StateSession instance.
+            bq_client: Optional Google Cloud BigQuery client instance.
+
+        Returns:
+            Dictionary containing execution status, generated SQL queries, yield metrics, lagging market
+            callouts, and visual widget payload.
+        """
         logger.info("Yield_Analytics_Agent.process_query prompt: '%s'", prompt)
         parsed_params = self.parse_prompt(prompt, session)
 
         if parsed_params.get("is_comparative"):
-            result = compare_ecg_yield_data(
+            result = compare_company_yield_data(
                 cluster_id=parsed_params["cluster_id"],
                 current_start=parsed_params["current_start"],
                 current_end=parsed_params["current_end"],
@@ -568,7 +599,7 @@ class Yield_Analytics_Agent:
                 "message": msg,
             }
 
-        result = query_ecg_yield_data(
+        result = query_company_yield_data(
             cluster_id=parsed_params["cluster_id"],
             start_date=parsed_params["start_date"],
             end_date=parsed_params["end_date"],

@@ -7,6 +7,7 @@ import logging
 import re
 from typing import Any, Dict, Optional
 from src.config import APIGEE_MARKETING_ENDPOINT, GCS_MARKETING_BUCKET, MODEL_MARKETING
+from src.datastore import datastore
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ def resolve_imagen_asset_uri(
         cluster: Target cluster identifier (e.g. 'MEDITERRANEAN_SOUTH').
 
     Returns:
-        GCS URI string formatted as 'gs://ecg-marketing-assets/genai/banners/{market}_{cluster}_july.png'.
+        GCS URI string formatted as 'gs://company-marketing-assets/genai/banners/{market}_{cluster}_july.png'.
     """
     mkt = str(target_market or "nl").strip().lower()
     cls = str(cluster or "mediterranean_south").strip().lower().replace(" ", "_")
@@ -80,7 +81,15 @@ def calculate_dynamic_discount(
     revenue_loss: float = 13950.0,
     lag_percentage: float = 0.15,
 ) -> int:
-    """Calculates discount percentage automatically based on the loss of unmade sales / held-back inventory."""
+    """Calculates discount percentage automatically based on the loss of unmade sales / held-back inventory.
+
+    Args:
+        revenue_loss: Estimated revenue loss in Euros from unmade sales (default: 13950.0).
+        lag_percentage: Booking pacing lag percentage (default: 0.15 for 15%).
+
+    Returns:
+        Recommended promotional discount integer percentage (e.g. 10, 15, or 25).
+    """
     if revenue_loss >= 20000 or lag_percentage >= 0.20:
         return 25
     elif revenue_loss >= 10000 or lag_percentage >= 0.15:
@@ -101,7 +110,23 @@ def crm_create_flash_campaign(
     cluster: Optional[str] = None,
     **kwargs: Any,
 ) -> Dict[str, Any]:
-    """Drafts a flash promotion marketing campaign via CRM Webhook API."""
+    """Drafts a flash promotion marketing campaign via CRM Webhook API.
+
+    Args:
+        campaign_name: Optional campaign title string.
+        target_segment_id: Optional target audience CRM segment identifier.
+        discount_percentage: Optional promotional discount percentage integer or string.
+        estimated_revenue_loss_eur: Estimated revenue loss in Euros from unmade sales (default: 13950.0).
+        copywriting_text: Optional localized advertising copy string.
+        image_asset_gcs_uri: Optional Google Cloud Storage URI for campaign banner graphic.
+        target_market: Optional market country code (e.g. 'NL', 'FR', 'DE').
+        cluster: Optional target campsite cluster name.
+        **kwargs: Additional keyword arguments for camelCase alias support from UI frontend.
+
+    Returns:
+        Structured response containing execution status, generated campaign ID, applied parameters,
+        and interactive CRM Flash Campaign widget payload.
+    """
     # Resolve camelCase parameter aliases from Gemini Enterprise UI
     if campaign_name is None:
         campaign_name = kwargs.get("campaignName") or kwargs.get("campaign_name") or "Offre Spéciale Été 2026"
@@ -157,7 +182,6 @@ def crm_create_flash_campaign(
         "discount_percentage": discount_val,
         "target_market": target_market,
         "cluster": cluster,
-        "copywriting_text": copy_text,
         "image_asset_gcs_uri": image_uri,
         "endpoint": endpoint,
     }
@@ -165,7 +189,7 @@ def crm_create_flash_campaign(
     msg = f"Successfully created draft campaign '{campaign_name}' targeting segment '{target_segment_id}' ({discount_val}% discount)."
     logger.info("CRM flash campaign creation successful: %s", msg)
 
-    return {
+    res_payload = {
         "status": "SUCCESS",
         "campaign_name": campaign_name,
         "target_segment_id": target_segment_id,
@@ -176,6 +200,9 @@ def crm_create_flash_campaign(
         "widget": widget_payload,
         "message": msg,
     }
+
+    datastore.save_crm_campaign(res_payload)
+    return res_payload
 
 
 class Marketing_Campaign_Agent:
@@ -189,7 +216,16 @@ class Marketing_Campaign_Agent:
     def process_turn(
         self, prompt: str, session: Optional[Any] = None
     ) -> Dict[str, Any]:
-        """Process turn to draft marketing flash campaign based on prompt or session context."""
+        """Process turn to draft marketing flash campaign based on prompt or session context.
+
+        Args:
+            prompt: Natural language user prompt string.
+            session: Optional active StateSession instance containing target market and cluster.
+
+        Returns:
+            Dictionary containing campaign creation outcome, copywriting text, banner GCS URI,
+            and interactive CRM Flash Campaign widget payload.
+        """
         logger.info("Marketing_Campaign_Agent processing turn for prompt: '%s'", prompt)
 
         target_market = "NL"

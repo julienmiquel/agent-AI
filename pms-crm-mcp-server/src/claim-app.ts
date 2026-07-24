@@ -201,7 +201,7 @@ function setupSelectors(): void {
   });
 }
 
-const app = new App({ name: "ECG Customer Maintenance & Claim Tickets", version: "1.0.0" });
+const app = new App({ name: "Company Customer Maintenance & Claim Tickets", version: "1.0.0" });
 
 app.ontoolresult = (result) => {
   console.log("[CLAIM-APP] Tool result received via postMessage:", result);

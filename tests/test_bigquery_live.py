@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 import pytest
 from src.agents import (
     Yield_Analytics_Agent,
-    compare_ecg_yield_data,
-    query_ecg_yield_data,
+    compare_company_yield_data,
+    query_company_yield_data,
 )
 
 
@@ -88,10 +88,10 @@ class SQLiteBigQueryAdapter:
 
     def query(self, sql_query: str):
         # Convert BigQuery specific backtick tables and functions for SQLite compatibility
-        sqlite_query = sql_query.replace("`customer-demo-01.ecg_analytics.occupancy_daily`", "occupancy_daily")
-        sqlite_query = sqlite_query.replace("`customer-demo-01.ecg_analytics.booking_segments`", "booking_segments")
-        sqlite_query = sqlite_query.replace("`ecg_analytics.occupancy_daily`", "occupancy_daily")
-        sqlite_query = sqlite_query.replace("`ecg_analytics.booking_segments`", "booking_segments")
+        sqlite_query = sql_query.replace("`customer-demo-01.company_analytics.occupancy_daily`", "occupancy_daily")
+        sqlite_query = sqlite_query.replace("`customer-demo-01.company_analytics.booking_segments`", "booking_segments")
+        sqlite_query = sqlite_query.replace("`company_analytics.occupancy_daily`", "occupancy_daily")
+        sqlite_query = sqlite_query.replace("`company_analytics.booking_segments`", "booking_segments")
         sqlite_query = sqlite_query.replace("SAFE_DIVIDE(a, b)", "CAST(a AS REAL) / CAST(b AS REAL)")
 
         # Handle SAFE_DIVIDE regex replacement if present
@@ -122,7 +122,7 @@ class SQLiteBigQueryAdapter:
 def test_live_bigquery_adapter_occupancy_query():
     adapter = SQLiteBigQueryAdapter()
 
-    res = query_ecg_yield_data(
+    res = query_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         start_date="2026-07-01",
         end_date="2026-07-31",
@@ -142,7 +142,7 @@ def test_live_bigquery_adapter_occupancy_query():
 def test_live_bigquery_adapter_comparative_query():
     adapter = SQLiteBigQueryAdapter()
 
-    res = compare_ecg_yield_data(
+    res = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         current_start="2026-07-01",
         current_end="2026-07-31",

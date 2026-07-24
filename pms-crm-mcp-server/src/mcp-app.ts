@@ -342,7 +342,7 @@ function generateCopywriting(market: string, cluster: string, discount: number):
 function resolveImagenUri(market: string, cluster: string): string {
   const m = market.toLowerCase();
   const c = cluster.toLowerCase().replace(/ /g, "_");
-  return `gs://ecg-marketing-assets/genai/banners/${m}_${c}_july.png`;
+  return `gs://company-marketing-assets/genai/banners/${m}_${c}_july.png`;
 }
 
 // ---------------------------------------------------------------------------
@@ -695,7 +695,7 @@ function setupHITL(): void {
 // MCP App SDK Connection & Client Tools
 // ---------------------------------------------------------------------------
 
-const app = new App({ name: "ECG PMS & CRM Control Center", version: "1.0.0" });
+const app = new App({ name: "Company PMS & CRM Control Center", version: "1.0.0" });
 
 app.ontoolresult = (result) => {
   console.log("[MCP-APP] Tool result received:", result);

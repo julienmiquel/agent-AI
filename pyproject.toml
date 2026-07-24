@@ -1,7 +1,7 @@
 [project]
-name = "agent-ecg"
+name = "agent-company"
 version = "0.1.0"
-description = "European Camping Group (ECG) Multi-Agent System built with Google ADK"
+description = "European Camping Company (Company) Multi-Agent System built with Google ADK"
 readme = "spec.md"
 requires-python = ">=3.10"
 dependencies = [

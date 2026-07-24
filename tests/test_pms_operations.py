@@ -2,7 +2,7 @@
 
 import pytest
 from src.agents import (
-    ECG_Supervisor_Agent,
+    Company_Supervisor_Agent,
     PMS_Operations_Agent,
     StateSession,
     resalys_update_unit_inventory,

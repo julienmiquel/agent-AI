@@ -1,7 +1,7 @@
-"""Unit tests for ECG_Supervisor_Agent and StateSession."""
+"""Unit tests for Company_Supervisor_Agent and StateSession."""
 
 import pytest
-from src.agents.supervisor import ECG_Supervisor_Agent, StateSession
+from src.agents.supervisor import Company_Supervisor_Agent, StateSession
 
 
 def test_session_state_initialization():
@@ -26,7 +26,7 @@ def test_substring_market_collision():
 
 
 def test_intent_classification():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
 
     assert supervisor.classify_intent("Analyze July occupancy for Mediterranean South cluster") == "YIELD_ANALYTICS"
     assert supervisor.classify_intent("Release mobil-homes MH-102 to sale") == "PMS_OPERATIONS"
@@ -35,7 +35,7 @@ def test_intent_classification():
 
 
 def test_hitl_interception_approval_and_rejection_flow():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
 
     # Setup session context
@@ -69,7 +69,7 @@ def test_hitl_interception_approval_and_rejection_flow():
 
 
 def test_hitl_negative_phrasing_with_ok():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
     session.set("session.campsite_id", "LA_SIRENE_06")
     session.set("session.unit_ids", ["MH-102"])
@@ -85,7 +85,7 @@ def test_hitl_negative_phrasing_with_ok():
 
 
 def test_multi_turn_session_context_retention():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
 
     # Turn 1: Comparative yield query setting cluster, market, and unit_ids context
@@ -111,7 +111,7 @@ def test_multi_turn_session_context_retention():
 
 
 def test_empty_or_whitespace_prompt_handling():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
 
     res1 = supervisor.process_turn("", session)

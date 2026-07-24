@@ -48,7 +48,7 @@ def register_agent(project_id: str, engine_id: str, reasoning_engine_name: str):
     print(f"Registration Endpoint: {agent_reg_url}")
     
     agent_payload = {
-        "displayName": "ECG Supervisor Agent",
+        "displayName": "Company Supervisor Agent",
         "description": f"Deployed via robust ADK architecture at {timestamp}",
         "adkAgentDefinition": {
              "provisionedReasoningEngine": {
@@ -91,7 +91,7 @@ def register_agent(project_id: str, engine_id: str, reasoning_engine_name: str):
     assistant_url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{project_id}/locations/global/collections/default_collection/engines/{engine_id}/assistants/default_assistant?update_mask=displayName"
     assistant_payload = {
         "name": f"projects/{project_id}/locations/global/collections/default_collection/engines/{engine_id}/assistants/default_assistant",
-        "displayName": "ECG Supervisor Agent"
+        "displayName": "Company Supervisor Agent"
     }
     
     assistant_req = urllib.request.Request(
@@ -108,7 +108,7 @@ def register_agent(project_id: str, engine_id: str, reasoning_engine_name: str):
     try:
         with urllib.request.urlopen(assistant_req, context=ssl_context) as resp:
             assistant_resp = json.loads(resp.read().decode("utf-8"))
-            print("✅ SUCCESS: Discovery Engine default_assistant updated to 'ECG Supervisor Agent'!")
+            print("✅ SUCCESS: Discovery Engine default_assistant updated to 'Company Supervisor Agent'!")
             print(f"   Assistant Name: {assistant_resp.get('name')}")
             print(f"   Display Name  : {assistant_resp.get('displayName')}")
     except urllib.error.HTTPError as e:

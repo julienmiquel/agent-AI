@@ -101,7 +101,7 @@ function generateCopywriting(market: string, cluster: string, discount: number):
 function resolveImagenUri(market: string, cluster: string): string {
   const m = market.toLowerCase();
   const c = cluster.toLowerCase().replace(/ /g, "_");
-  return `gs://ecg-marketing-assets/genai/banners/${m}_${c}_july.png`;
+  return `gs://company-marketing-assets/genai/banners/${m}_${c}_july.png`;
 }
 
 function renderCRMPreview(): void {
@@ -168,7 +168,7 @@ function setupHITL(): void {
   });
 }
 
-const app = new App({ name: "ECG CRM Flash Promotion Campaigns", version: "1.0.0" });
+const app = new App({ name: "Company CRM Flash Promotion Campaigns", version: "1.0.0" });
 
 app.ontoolresult = (result) => {
   console.log("[CRM-APP] Tool result received:", result);

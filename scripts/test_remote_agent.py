@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone Remote Verification Script for ECG Supervisor Agent.
+"""Standalone Remote Verification Script for Company Supervisor Agent.
 
 Tests the live deployed Agent Engine instance on Vertex AI via the LLM Chat Interface
 and verifies GCP Cloud Logging audit entries.
@@ -114,7 +114,7 @@ def main():
     resource_name = args.resource_name or get_default_resource_name(args.project, args.region)
     
     print("==========================================================")
-    print(" 🚀 Live Remote ECG Agent Health & Verification Check")
+    print(" 🚀 Live Remote Company Agent Health & Verification Check")
     print("==========================================================")
     print(f" Project ID    : {args.project}")
     print(f" Region        : {args.region}")

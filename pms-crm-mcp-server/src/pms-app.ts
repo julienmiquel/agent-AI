@@ -318,7 +318,7 @@ function setupHITL(): void {
   });
 }
 
-const app = new App({ name: "ECG Resalys PMS Inventory", version: "1.0.0" });
+const app = new App({ name: "Company Resalys PMS Inventory", version: "1.0.0" });
 
 app.ontoolresult = (result) => {
   console.log("[PMS-APP] Tool result received:", result);

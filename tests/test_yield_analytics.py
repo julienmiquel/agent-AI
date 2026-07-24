@@ -1,13 +1,13 @@
-"""Unit tests for Yield_Analytics_Agent, query_ecg_yield_data tool, and supervisor routing integration."""
+"""Unit tests for Yield_Analytics_Agent, query_company_yield_data tool, and supervisor routing integration."""
 
 from unittest.mock import MagicMock
 import pytest
 from src.agents import (
-    ECG_Supervisor_Agent,
+    Company_Supervisor_Agent,
     StateSession,
     Yield_Analytics_Agent,
-    compare_ecg_yield_data,
-    query_ecg_yield_data,
+    compare_company_yield_data,
+    query_company_yield_data,
 )
 from src.config import MODEL_YIELD
 
@@ -50,8 +50,8 @@ def test_parse_prompt_fallback_to_session():
     assert parsed["target_market"] == "NL"
 
 
-def test_query_ecg_yield_data_success():
-    res = query_ecg_yield_data(
+def test_query_company_yield_data_success():
+    res = query_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         start_date="2026-07-01",
         end_date="2026-07-31",
@@ -60,8 +60,8 @@ def test_query_ecg_yield_data_success():
 
     assert res["status"] == "SUCCESS"
     assert len(res["sql_queries"]) == 2
-    assert "ecg_analytics.occupancy_daily" in res["sql_queries"][0]
-    assert "ecg_analytics.booking_segments" in res["sql_queries"][1]
+    assert "company_analytics.occupancy_daily" in res["sql_queries"][0]
+    assert "company_analytics.booking_segments" in res["sql_queries"][1]
 
     # Verify widget structure
     widget = res["widget"]
@@ -74,14 +74,14 @@ def test_query_ecg_yield_data_success():
     assert widget["lagging_callouts"][0]["segment"] == "NL"
 
 
-def test_query_ecg_yield_data_invalid_parameters():
+def test_query_company_yield_data_invalid_parameters():
     # Empty cluster_id
-    res1 = query_ecg_yield_data(cluster_id="")
+    res1 = query_company_yield_data(cluster_id="")
     assert res1["status"] == "VALIDATION_ERROR"
     assert "Cluster ID cannot be empty" in res1["error"]
 
     # Negative date window (start_date > end_date)
-    res2 = query_ecg_yield_data(
+    res2 = query_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         start_date="2026-07-31",
         end_date="2026-07-01",
@@ -90,7 +90,7 @@ def test_query_ecg_yield_data_invalid_parameters():
     assert "Invalid date window" in res2["error"]
 
 
-def test_query_ecg_yield_data_with_mock_bq_client():
+def test_query_company_yield_data_with_mock_bq_client():
     mock_bq = MagicMock()
 
     # Mock row objects returned by BigQuery
@@ -111,7 +111,7 @@ def test_query_ecg_yield_data_with_mock_bq_client():
 
     mock_bq.query.side_effect = [job_occ, job_seg]
 
-    res = query_ecg_yield_data(
+    res = query_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         start_date="2026-07-01",
         end_date="2026-07-31",
@@ -127,11 +127,11 @@ def test_query_ecg_yield_data_with_mock_bq_client():
     assert mock_bq.query.call_count == 2
 
 
-def test_query_ecg_yield_data_bq_client_error():
+def test_query_company_yield_data_bq_client_error():
     mock_bq = MagicMock()
     mock_bq.query.side_effect = Exception("BigQuery Connection Error")
 
-    res = query_ecg_yield_data(
+    res = query_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         bq_client=mock_bq,
     )
@@ -156,7 +156,7 @@ def test_yield_analytics_agent_process_query():
 
 
 def test_supervisor_yield_analytics_routing():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
 
     res = supervisor.process_turn(
@@ -172,8 +172,8 @@ def test_supervisor_yield_analytics_routing():
     assert res["agent_output"]["metrics"]["occupancy_rate"] == 0.78
 
 
-def test_compare_ecg_yield_data_success_and_yoy_variance():
-    res = compare_ecg_yield_data(
+def test_compare_company_yield_data_success_and_yoy_variance():
+    res = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         current_start="2026-07-01",
         current_end="2026-07-31",
@@ -184,10 +184,10 @@ def test_compare_ecg_yield_data_success_and_yoy_variance():
 
     assert res["status"] == "SUCCESS"
     assert len(res["sql_queries"]) == 4
-    assert "ecg_analytics.occupancy_daily" in res["sql_queries"][0]
-    assert "ecg_analytics.occupancy_daily" in res["sql_queries"][1]
-    assert "ecg_analytics.booking_segments" in res["sql_queries"][2]
-    assert "ecg_analytics.booking_segments" in res["sql_queries"][3]
+    assert "company_analytics.occupancy_daily" in res["sql_queries"][0]
+    assert "company_analytics.occupancy_daily" in res["sql_queries"][1]
+    assert "company_analytics.booking_segments" in res["sql_queries"][2]
+    assert "company_analytics.booking_segments" in res["sql_queries"][3]
 
     # Verify metrics & YoY variance
     metrics = res["metrics"]
@@ -211,14 +211,14 @@ def test_compare_ecg_yield_data_success_and_yoy_variance():
     assert widget["variance"]["occupancy_rate_delta"] == -0.10
 
 
-def test_compare_ecg_yield_data_validation_errors():
+def test_compare_company_yield_data_validation_errors():
     # Empty cluster_id
-    res1 = compare_ecg_yield_data(cluster_id="")
+    res1 = compare_company_yield_data(cluster_id="")
     assert res1["status"] == "VALIDATION_ERROR"
     assert "Cluster ID cannot be empty" in res1["error"]
 
     # Invalid current date window
-    res2 = compare_ecg_yield_data(
+    res2 = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         current_start="2026-07-31",
         current_end="2026-07-01",
@@ -227,7 +227,7 @@ def test_compare_ecg_yield_data_validation_errors():
     assert "Invalid current date window" in res2["error"]
 
     # Invalid prior date window
-    res3 = compare_ecg_yield_data(
+    res3 = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         prior_start="2025-07-31",
         prior_end="2025-07-01",
@@ -236,7 +236,7 @@ def test_compare_ecg_yield_data_validation_errors():
     assert "Invalid prior date window" in res3["error"]
 
 
-def test_compare_ecg_yield_data_with_mock_bq_client():
+def test_compare_company_yield_data_with_mock_bq_client():
     mock_bq = MagicMock()
 
     # Current period row
@@ -262,7 +262,7 @@ def test_compare_ecg_yield_data_with_mock_bq_client():
 
     mock_bq.query.side_effect = [job_curr, job_prior, job_seg]
 
-    res = compare_ecg_yield_data(
+    res = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         bq_client=mock_bq,
     )
@@ -272,7 +272,7 @@ def test_compare_ecg_yield_data_with_mock_bq_client():
     assert res["metrics"]["variance"]["revpar_delta_eur"] == -10.00
 
 
-def test_compare_ecg_yield_data_missing_prior_data_fallback():
+def test_compare_company_yield_data_missing_prior_data_fallback():
     mock_bq = MagicMock()
 
     row_curr = MagicMock()
@@ -290,7 +290,7 @@ def test_compare_ecg_yield_data_missing_prior_data_fallback():
 
     mock_bq.query.side_effect = [job_curr, job_prior, job_seg]
 
-    res = compare_ecg_yield_data(
+    res = compare_company_yield_data(
         cluster_id="MEDITERRANEAN_SOUTH",
         bq_client=mock_bq,
     )
@@ -319,7 +319,7 @@ def test_comparative_prompt_parsing():
 
 
 def test_comparative_process_query_and_session_retention():
-    supervisor = ECG_Supervisor_Agent()
+    supervisor = Company_Supervisor_Agent()
     session = StateSession()
 
     # Turn 1: Comparative prompt

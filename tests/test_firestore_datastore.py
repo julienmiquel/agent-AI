@@ -1,13 +1,13 @@
-"""Unit tests for ECG Firebase Cloud Firestore Datastore module."""
+"""Unit tests for Company Firebase Cloud Firestore Datastore module."""
 
 import pytest
-from src.datastore import ECGDatastore, datastore
+from src.datastore import CompanyDatastore, datastore
 from src.agents import StateSession, resalys_update_unit_inventory, crm_create_flash_campaign
 
 
 def test_firestore_datastore_initialization():
-    ds = ECGDatastore(project_id="ecg-test-project")
-    assert ds.project_id == "ecg-test-project"
+    ds = CompanyDatastore(project_id="company-test-project")
+    assert ds.project_id == "company-test-project"
     assert "sessions" in ds._memory_store
     assert "pms_inventory" in ds._memory_store
     assert "crm_campaigns" in ds._memory_store

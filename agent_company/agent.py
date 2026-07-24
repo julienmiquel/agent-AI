@@ -1,6 +1,6 @@
-"""ECG ADK Multi-Agent System Entrypoint.
+"""Company ADK Multi-Agent System Entrypoint.
 
-Initializes the ECG Root Supervisor Agent, sub-agents (Yield Analytics, PMS Operations,
+Initializes the Company Root Supervisor Agent, sub-agents (Yield Analytics, PMS Operations,
 Marketing Campaign), and exposes root_agent for Google Agent Development Kit (ADK) CLI & Web server.
 """
 
@@ -13,24 +13,24 @@ _dir = os.path.dirname(os.path.abspath(__file__))
 if _dir not in sys.path:
     sys.path.insert(0, _dir)
 
-from src.agents.supervisor import ECG_Supervisor_Agent, StateSession
-from src.agents.yield_analytics import Yield_Analytics_Agent, compare_ecg_yield_data, query_ecg_yield_data
+from src.agents.supervisor import Company_Supervisor_Agent, StateSession
+from src.agents.yield_analytics import Yield_Analytics_Agent, compare_company_yield_data, query_company_yield_data
 from src.agents.pms_operations import PMS_Operations_Agent, resalys_update_unit_inventory
 from src.agents.marketing_campaign import Marketing_Campaign_Agent, crm_create_flash_campaign
 
 from src.config import MODEL_SUPERVISOR
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = logging.getLogger("ecg_agent")
+logger = logging.getLogger("company_agent")
 
 # Attempt ADK Agent wrapper initialization if google.adk / google.genai is installed
 try:
     from google.adk.agents import Agent
     root_agent = Agent(
-        name="ECG_Supervisor_Agent",
+        name="Company_Supervisor_Agent",
         model=MODEL_SUPERVISOR,
-        description="Root Supervisor Agent for European Camping Group (ECG) yield & operations",
-        instruction="""Tu es l'assistant exécutif d'ECG (European Camping Group).
+        description="Root Supervisor Agent for European Camping Company (Company) yield & operations",
+        instruction="""Tu es l'assistant exécutif d'Company (European Camping Company).
 Reçois les demandes utilisateurs pour l'analyse Yield BigQuery, l'inventaire PMS Resalys, et les campagnes marketing CRM.
 RÈGLE STRICTE SUR LES PROMOTIONS / DISCOUNT :
 Ne demande JAMAIS à l'utilisateur de définir ou fournir un pourcentage de réduction.
@@ -39,29 +39,30 @@ Si le manque à gagner ou le retard est significatif (ex. 13 950 € ou 15% de r
 IMPORTANT: Toute mise à jour de stock dans Resalys ou création de campagne doit faire l'objet d'une confirmation explicite à l'utilisateur.
 RÈGLE OBLIGATOIRE DE CONFIRMATION POST-EXÉCUTION :
 Après TOUTE exécution d'un outil (comme resalys_update_unit_inventory ou crm_create_flash_campaign), tu DOIS TOUJOURS répondre explicitement à l'utilisateur par un message textuel de confirmation en français résumant clairement les détails de l'opération accomplie (ex: 'Les 4 mobil-homes MH-102, MH-103, MH-104 et MH-105 du camping La Sirène ont été remis en vente avec succès dans Resalys PMS.'). Ne réponds JAMAIS par du texte vide ou un simple statut.""",
-        tools=[query_ecg_yield_data, compare_ecg_yield_data, resalys_update_unit_inventory, crm_create_flash_campaign],
+        tools=[query_company_yield_data, compare_company_yield_data, resalys_update_unit_inventory, crm_create_flash_campaign],
     )
 except ImportError:
     try:
         from google.genai.agent_development_kit import Agent
         root_agent = Agent(
-            name="ECG_Supervisor_Agent",
+            name="Company_Supervisor_Agent",
             model=MODEL_SUPERVISOR,
-            instructions="Root Supervisor Agent for European Camping Group (ECG) yield & operations",
+            instructions="Root Supervisor Agent for European Camping Company (Company) yield & operations",
+            tools=[query_company_yield_data, compare_company_yield_data, resalys_update_unit_inventory, crm_create_flash_campaign],
         )
     except ImportError:
-        # Fallback to local ECG_Supervisor_Agent instance
-        root_agent = ECG_Supervisor_Agent()
+        # Fallback to local Company_Supervisor_Agent instance
+        root_agent = Company_Supervisor_Agent()
 
 
 def main():
     """Execute initialization verification and interactive demo turns."""
-    logger.info("Initializing European Camping Group (ECG) Multi-Agent System...")
-    supervisor = ECG_Supervisor_Agent()
+    logger.info("Initializing European Camping Company (Company) Multi-Agent System...")
+    supervisor = Company_Supervisor_Agent()
     session = StateSession(session_id="session_demo_01", user_id="julien")
 
     print("\n==================================================================")
-    print("      European Camping Group (ECG) - Multi-Agent System (ADK)")
+    print("      European Camping Company (Company) - Multi-Agent System (ADK)")
     print("==================================================================")
     print(f"Supervisor Model: {supervisor.model_name}")
     print(f"Active Session: {session.session_id} (User: {session.user_id})")

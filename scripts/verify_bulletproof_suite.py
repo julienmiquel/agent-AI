@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bulletproof Multi-Domain Verification Suite for ECG Supervisor Agent.
+"""Bulletproof Multi-Domain Verification Suite for Company Supervisor Agent.
 
 Executes an exhaustive 8-step end-to-end verification pipeline against the live
 deployed Reasoning Engine instance on Vertex AI Agent Engine.

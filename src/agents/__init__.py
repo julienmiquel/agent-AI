@@ -1,10 +1,10 @@
-"""Agents package export module for ECG Multi-Agent System."""
+"""Agents package export module for Company Multi-Agent System."""
 
-from src.agents.supervisor import ECG_Supervisor_Agent, StateSession
+from src.agents.supervisor import Company_Supervisor_Agent, StateSession
 from src.agents.yield_analytics import (
     Yield_Analytics_Agent,
-    compare_ecg_yield_data,
-    query_ecg_yield_data,
+    compare_company_yield_data,
+    query_company_yield_data,
 )
 from src.agents.pms_operations import (
     PMS_Operations_Agent,
@@ -16,13 +16,13 @@ from src.agents.marketing_campaign import (
 )
 
 __all__ = [
-    "ECG_Supervisor_Agent",
+    "Company_Supervisor_Agent",
     "StateSession",
     "Yield_Analytics_Agent",
     "PMS_Operations_Agent",
     "Marketing_Campaign_Agent",
-    "compare_ecg_yield_data",
-    "query_ecg_yield_data",
+    "compare_company_yield_data",
+    "query_company_yield_data",
     "resalys_update_unit_inventory",
     "crm_create_flash_campaign",
 ]

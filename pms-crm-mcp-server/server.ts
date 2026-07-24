@@ -1,5 +1,5 @@
 /**
- * European Camping Group (ECG) PMS & CRM MCP App Server
+ * European Camping Company (Company) PMS & CRM MCP App Server
  *
  * Interfaced with Google Cloud Firestore database for real, un-mocked data persistence.
  */
@@ -107,7 +107,7 @@ export async function loadCampsitesFromFirestore(campsiteIdFilter?: string) {
           }
         }
         await batch.commit();
-        console.log("Seeded initial campsite inventory into Firebase Cloud Firestore.");
+        console.error("Seeded initial campsite inventory into Firebase Cloud Firestore.");
       }
     } catch (err) {
       console.warn("Firestore query error, using in-memory store:", err);
@@ -148,7 +148,7 @@ export async function updateFirestoreUnits(campsiteId: string, unitIds: string[]
         );
       }
       await batch.commit();
-      console.log(`Updated ${unitIds.length} units in Firebase Firestore DB.`);
+      console.error(`Updated ${unitIds.length} units in Firebase Firestore DB.`);
     } catch (e) {
       console.warn("Firestore update warning:", e);
     }
@@ -164,7 +164,7 @@ export async function saveFirestoreCampaign(campaignData: any) {
   if (firestoreDb) {
     try {
       await firestoreDb.collection("crm_campaigns").doc(campaignData.campaign_name).set(campaignData, { merge: true });
-      console.log(`Saved CRM campaign '${campaignData.campaign_name}' to Firebase Firestore DB.`);
+      console.error(`Saved CRM campaign '${campaignData.campaign_name}' to Firebase Firestore DB.`);
     } catch (e) {
       console.warn("Firestore save campaign warning:", e);
     }
@@ -223,7 +223,7 @@ export async function saveFirestoreTicket(ticketData: any) {
   if (firestoreDb) {
     try {
       await firestoreDb.collection("support_tickets").doc(ticketData.ticket_id).set(ticketData, { merge: true });
-      console.log(`Saved support ticket '${ticketData.ticket_id}' to Firebase Firestore DB.`);
+      console.error(`Saved support ticket '${ticketData.ticket_id}' to Firebase Firestore DB.`);
     } catch (e) {
       console.warn("Firestore save ticket warning:", e);
     }
@@ -275,7 +275,7 @@ export async function updateFirestoreTicketStatus(ticketId: string, newStatus: s
         },
         { merge: true }
       );
-      console.log(`Updated support ticket '${ticketId}' status to '${newStatus}' in Firebase Firestore DB.`);
+      console.error(`Updated support ticket '${ticketId}' status to '${newStatus}' in Firebase Firestore DB.`);
     } catch (e) {
       console.warn("Firestore update ticket status warning:", e);
     }
@@ -288,7 +288,7 @@ export async function updateFirestoreTicketStatus(ticketId: string, newStatus: s
 
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "ECG PMS & CRM MCP App Server",
+    name: "Company PMS & CRM MCP App Server",
     version: "1.0.0",
   });
 
@@ -316,6 +316,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/pms-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -374,6 +376,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/pms-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -417,7 +421,7 @@ export function createServer(): McpServer {
     "crm-stage-flash-campaign",
     {
       title: "Stage CRM Flash Promotion Campaign",
-      description: "Stages a flash campaign draft in Firebase Cloud Firestore and Apigee CRM Webhook gateway (POST /marketing/v1/campaigns/draft).",
+      description: "Stages a flash campaign draft in Firebase Cloud Firestore and Apigee CRM Webhook gateway (POST /marketing/v1/campaigns/draft). CRITICAL RULE: Because this action triggers an interactive Human-in-the-Loop confirmation card, you MUST ALWAYS output a clear introductory message in your public text response (e.g., 'I have prepared the flash campaign draft for your review. Please confirm the details below to proceed.') alongside calling this tool. Never invoke this tool with an empty text response.",
       inputSchema: {
         campaignName: z.string().describe("Campaign Name"),
         targetMarket: z.string().describe("Target Market (NL, FR, DE, UK)"),
@@ -434,6 +438,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/crm-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -445,7 +451,7 @@ export function createServer(): McpServer {
     },
     async (args): Promise<CallToolResult> => {
       const copywritingText = `Profiteer van ${args.discountPercentage}% korting op uw zomervakantie in ${args.cluster.replace(/_/g, " ").toLowerCase()}! Boek nu uw Premium stacaravan op La Sirène.`;
-      const imageAssetGcsUri = `gs://ecg-marketing-assets/genai/banners/${args.targetMarket.toLowerCase()}_${args.cluster.toLowerCase()}_july.png`;
+      const imageAssetGcsUri = `gs://company-marketing-assets/genai/banners/${args.targetMarket.toLowerCase()}_${args.cluster.toLowerCase()}_july.png`;
 
       const campaignDoc = {
         campaign_name: args.campaignName,
@@ -488,10 +494,10 @@ export function createServer(): McpServer {
   // Tool 4: Create Support Ticket
   registerAppTool(
     server,
-    "ecg-create-support-ticket",
+    "company-create-support-ticket",
     {
       title: "Create Customer Claim Support Ticket",
-      description: "Registers a customer claim support ticket in Firebase Cloud Firestore database and ECG Support Portal.",
+      description: "Registers a customer claim support ticket in Firebase Cloud Firestore database and Company Support Portal.",
       inputSchema: {
         customerName: z.string().describe("Customer Full Name (e.g. Jean Dupont)"),
         campsiteId: z.string().describe("Campsite ID (e.g. LA_SIRENE_06)"),
@@ -510,6 +516,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/claim-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -555,7 +563,7 @@ export function createServer(): McpServer {
   // Tool 5: Get Support Tickets
   registerAppTool(
     server,
-    "ecg-get-support-tickets",
+    "company-get-support-tickets",
     {
       title: "Get Support Tickets List",
       description: "Returns list of open or resolved customer claim tickets from Firebase Cloud Firestore.",
@@ -573,6 +581,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/claim-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -603,7 +613,7 @@ export function createServer(): McpServer {
   // Tool 6: Update Ticket Status
   registerAppTool(
     server,
-    "ecg-update-ticket-status",
+    "company-update-ticket-status",
     {
       title: "Update Ticket Status",
       description: "Updates ticket status (OPEN, IN_PROGRESS, RESOLVED, CLOSED) in Firebase Cloud Firestore.",
@@ -621,6 +631,8 @@ export function createServer(): McpServer {
           resourceUri: "ui://pms-crm/claim-app.html",
           csp: {
             connectDomains: [
+              "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+              "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
               "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
               "https://*.run.app",
@@ -653,10 +665,10 @@ export function createServer(): McpServer {
 
   // App Resources for separate dedicated pages
   const registeredResources = [
-    { uri: "ui://pms-crm/pms-app.html", filename: "pms-app.html", desc: "Dedicated ECG Resalys PMS Inventory Management Widget Page" },
-    { uri: "ui://pms-crm/crm-app.html", filename: "crm-app.html", desc: "Dedicated ECG CRM Flash Promotion Campaigns Widget Page" },
-    { uri: "ui://pms-crm/claim-app.html", filename: "claim-app.html", desc: "Dedicated ECG Customer Maintenance & Claim Tickets Widget Page" },
-    { uri: "ui://pms-crm/mcp-app.html", filename: "mcp-app.html", desc: "Full ECG PMS & CRM Operations Control Center Widget Page" },
+    { uri: "ui://pms-crm/pms-app.html", filename: "pms-app.html", desc: "Dedicated Company Resalys PMS Inventory Management Widget Page" },
+    { uri: "ui://pms-crm/crm-app.html", filename: "crm-app.html", desc: "Dedicated Company CRM Flash Promotion Campaigns Widget Page" },
+    { uri: "ui://pms-crm/claim-app.html", filename: "claim-app.html", desc: "Dedicated Company Customer Maintenance & Claim Tickets Widget Page" },
+    { uri: "ui://pms-crm/mcp-app.html", filename: "mcp-app.html", desc: "Full Company PMS & CRM Operations Control Center Widget Page" },
   ];
 
   for (const item of registeredResources) {
@@ -669,6 +681,8 @@ export function createServer(): McpServer {
         description: item.desc,
         csp: {
           connectDomains: [
+            "https://company-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
+            "https://company-pms-crm-mcp-app-1008225662928.us-central1.run.app",
             "https://ecg-pms-crm-mcp-app-ahavst3hhq-uc.a.run.app",
             "https://ecg-pms-crm-mcp-app-1008225662928.us-central1.run.app",
             "https://*.run.app",

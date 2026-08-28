@@ -1,6 +1,6 @@
 # Declarative Infrastructure as Code (Terraform) — ECG Multi-Agent System
 
-This directory contains complete, production-grade **Terraform** configurations to declaratively provision and manage all foundational Google Cloud Platform (GCP) resources required by the European Camping Group (ECG) Autonomous Multi-Agent System.
+This directory contains complete, production-grade **Terraform** configurations to declaratively provision and manage all foundational Google Cloud Platform (GCP) resources required by the Holiday company Autonomous Multi-Agent System.
 
 ---
 

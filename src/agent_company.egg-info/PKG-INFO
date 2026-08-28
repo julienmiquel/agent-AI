@@ -1,4 +1,18 @@
-Voici la spécification d'implémentation technique basée sur le **Google Agent Development Kit (ADK)** pour le scénario **Holiday company**, structurée selon le framework **BMAD** (*BRIEF → MAP → ACT → DOUBLE-CHECK*).
+Metadata-Version: 2.4
+Name: agent-company
+Version: 0.1.0
+Summary: European Camping Company (Company) Multi-Agent System built with Google ADK
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: google-genai
+Requires-Dist: google-adk
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pytest>=8.0.0
+Requires-Dist: google-cloud-bigquery>=3.0.0
+Requires-Dist: google-cloud-aiplatform>=1.161.0
+Requires-Dist: google-cloud-firestore>=2.15.0
+
+Voici la spécification d'implémentation technique basée sur le **Google Agent Development Kit (ADK)** pour le scénario **Holiday company)**, structurée selon le framework **BMAD** (*BRIEF → MAP → ACT → DOUBLE-CHECK*).
 
 ---
 

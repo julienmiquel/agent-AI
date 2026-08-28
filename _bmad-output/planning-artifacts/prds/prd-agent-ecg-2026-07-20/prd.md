@@ -9,7 +9,7 @@ updated: '2026-07-20'
 
 ## 0. Document Purpose
 
-This Product Requirement Document (PRD) defines the operational, functional, and governance requirements for the European Camping Group (ECG) Multi-Agent System built on the Google Agent Development Kit (ADK). It bridges business strategy, IT architecture, and downstream agent development by specifying intent routing, natural language data analysis, property management system (PMS) inventory unlocking, and marketing campaign automation. Technical payload schemas, REST API specs, and reference Python implementation code are preserved in [addendum.md](file:///Users/julienmiquel/dev/agent-ecg/_bmad-output/planning-artifacts/prds/prd-agent-ecg-2026-07-20/addendum.md).
+This Product Requirement Document (PRD) defines the operational, functional, and governance requirements for the Holiday company Multi-Agent System built on the Google Agent Development Kit (ADK). It bridges business strategy, IT architecture, and downstream agent development by specifying intent routing, natural language data analysis, property management system (PMS) inventory unlocking, and marketing campaign automation. Technical payload schemas, REST API specs, and reference Python implementation code are preserved in [addendum.md](file:///Users/julienmiquel/dev/agent-ecg/_bmad-output/planning-artifacts/prds/prd-agent-ecg-2026-07-20/addendum.md).
 
 ## 1. Vision
 

@@ -1,6 +1,6 @@
 # ECG PMS & CRM Interactive MCP UI App Server
 
-An interactive, host-theme-aware **MCP App Server** built with `@modelcontextprotocol/ext-apps` and `@modelcontextprotocol/sdk` for European Camping Group (ECG) **Resalys PMS Inventory Management** and **Apigee CRM Flash Campaign Staging**.
+An interactive, host-theme-aware **MCP App Server** built with `@modelcontextprotocol/ext-apps` and `@modelcontextprotocol/sdk` for Holiday company **Resalys PMS Inventory Management** and **Apigee CRM Flash Campaign Staging**.
 
 ---
 

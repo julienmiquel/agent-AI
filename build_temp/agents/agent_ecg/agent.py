@@ -21,7 +21,7 @@ try:
     root_agent = Agent(
         name="ECG_Supervisor_Agent",
         model=MODEL_SUPERVISOR,
-        description="Root Supervisor Agent for European Camping Group (ECG) yield & operations",
+        description="Root Supervisor Agent for Holiday Company yield & operations",
         instruction="""Tu es l'assistant exécutif d'ECG (European Camping Group).
 Reçois les demandes utilisateurs pour l'analyse Yield BigQuery, l'inventaire PMS Resalys, et les campagnes marketing CRM.
 IMPORTANT: Toute mise à jour de stock dans Resalys ou création de campagne doit faire l'objet d'une confirmation explicite à l'utilisateur.""",
@@ -33,7 +33,7 @@ except ImportError:
         root_agent = Agent(
             name="ECG_Supervisor_Agent",
             model=MODEL_SUPERVISOR,
-            instructions="Root Supervisor Agent for European Camping Group (ECG) yield & operations",
+            instructions="Root Supervisor Agent for Holiday Company yield & operations",
         )
     except ImportError:
         # Fallback to local ECG_Supervisor_Agent instance
@@ -42,12 +42,12 @@ except ImportError:
 
 def main():
     """Execute initialization verification and interactive demo turns."""
-    logger.info("Initializing European Camping Group (ECG) Multi-Agent System...")
+    logger.info("Initializing Holiday Company Multi-Agent System...")
     supervisor = ECG_Supervisor_Agent()
     session = StateSession(session_id="session_demo_01", user_id="julien")
 
     print("\n==================================================================")
-    print("      European Camping Group (ECG) - Multi-Agent System (ADK)")
+    print("      Holiday Company - Multi-Agent System (ADK)")
     print("==================================================================")
     print(f"Supervisor Model: {supervisor.model_name}")
     print(f"Active Session: {session.session_id} (User: {session.user_id})")

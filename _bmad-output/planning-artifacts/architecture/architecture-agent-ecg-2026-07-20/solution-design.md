@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary & Business Context
 
-European Camping Group (ECG) operates over 300 outdoor holiday resorts across Europe. Managing yield (occupancy rate, average value per night, RevPAR) requires constant monitoring of booking trends, physical accommodation readiness, and rapid marketing activation.
+Holiday company operates over 300 outdoor holiday resorts across Europe. Managing yield (occupancy rate, average value per night, RevPAR) requires constant monitoring of booking trends, physical accommodation readiness, and rapid marketing activation.
 
 Currently, data silos between the BigQuery Data Warehouse, the Resalys Property Management System (PMS), and CRM marketing tools lead to a 24–48 hour lag between identifying an underperforming campsite cluster and launching a recovery promotion.
 

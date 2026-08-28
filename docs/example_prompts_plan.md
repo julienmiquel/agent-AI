@@ -1,7 +1,7 @@
 # ECG Multi-Agent Example Prompt Queries Implementation Plan
 
 ## Goal Description
-Create a comprehensive catalog of example natural language prompts, BigQuery SQL queries, and multi-turn conversation workflows for the European Camping Group (ECG) Multi-Agent System. This reference guide will help users, testers, and stakeholders effectively query and operate the system.
+Create a comprehensive catalog of example natural language prompts, BigQuery SQL queries, and multi-turn conversation workflows for the Holiday company Multi-Agent System. This reference guide will help users, testers, and stakeholders effectively query and operate the system.
 
 ---
 

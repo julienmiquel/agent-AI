@@ -1,4 +1,4 @@
-# European Camping Group (ECG) — Multi-Agent System
+# Holiday Company — Multi-Agent System
 
 [![Google ADK](https://img.shields.io/badge/Google%20ADK-Agent%20Development%20Kit-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)](https://cloud.google.com/products/agent-builder)
 [![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Agent%20Engine-EA4335?style=for-the-badge&logo=googlecloud&logoColor=white)](https://cloud.google.com/vertex-ai)
@@ -7,7 +7,7 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: Proprietary](https://img.shields.io/badge/License-ECG%20Internal-red?style=for-the-badge)](./spec.md)
 
-An enterprise-grade **Autonomous Multi-Agent System** built for **European Camping Group (ECG)** using the **Google Agent Development Kit (ADK)** and deployed on **Vertex AI Agent Engine**. 
+An enterprise-grade **Autonomous Multi-Agent System** built for **Holiday Company** using the **Google Agent Development Kit (ADK)** and deployed on **Vertex AI Agent Engine**. 
 
 This system orchestrates conversational workflows across data analytics, property management systems (PMS), and marketing CRM gateways. It bridges data silos between **BigQuery Yield Analytics**, **Resalys PMS Inventory Control**, and **Apigee CRM Campaign Staging**, reducing operational reaction time from days to minutes while enforcing strict **Human-in-the-Loop (HITL)** governance and zero-copy data security.
 
@@ -110,7 +110,7 @@ agent-ecg/
 │   └── README.md                 # Dedicated MCP Server documentation
 ├── scripts/                      # Automation, seeding, and deployment tools
 │   ├── seed_bigquery.py          # Live BigQuery DWH database seeder
-│   ├── seed_ecg_analytics.sql    # DML/DDL schema definitions for ECG analytics
+│   ├── seed_company_analytics.sql # DML/DDL schema definitions for Company analytics
 │   ├── pipeline.py               # Unified deployment & verification pipeline
 │   └── verify_bulletproof_suite.py # 8-step live Reasoning Engine verification suite
 ├── tests/                        # Comprehensive unit, integration & golden eval test suite (52 tests)
